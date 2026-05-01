@@ -1,0 +1,3260 @@
+{
+  "nodes": [
+    {
+      "id": "start",
+      "type": "activity",
+      "data": {
+        "label": "Start Workflow",
+        "type": "start",
+        "properties": {},
+        "isActive": false
+      },
+      "position": {
+        "x": 45,
+        "y": -105
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 45,
+        "y": -105
+      },
+      "dragging": false
+    },
+    {
+      "id": "step-1772639704148",
+      "type": "activity",
+      "position": {
+        "x": 450,
+        "y": 225
+      },
+      "data": {
+        "label": "Click Cari",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsTopMenu > div > button > span"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 450,
+        "y": 225
+      },
+      "dragging": false
+    },
+    {
+      "id": "step-1772639708586",
+      "type": "activity",
+      "position": {
+        "x": 450,
+        "y": 390
+      },
+      "data": {
+        "label": "Click Export",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsTopMenu > div > button:nth-of-type(2) > span"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 450,
+        "y": 390
+      },
+      "dragging": false
+    },
+    {
+      "id": "step-1772639712942",
+      "type": "activity",
+      "position": {
+        "x": 45,
+        "y": 555
+      },
+      "data": {
+        "label": "Click Pusat Unduhan",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsTopMenu > div > button:nth-of-type(4) > span > span"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 45,
+        "y": 555
+      },
+      "dragging": false
+    },
+    {
+      "id": "extract-text-1772639725804",
+      "type": "activity",
+      "position": {
+        "x": 1065,
+        "y": -105
+      },
+      "data": {
+        "label": "Extract text \"Selesai\"",
+        "type": "extract-text",
+        "properties": {
+          "selector": "div#__qiankun_microapp_wrapper_for_customer_platform_index__ > div > div > div:nth-of-type(6) > div > div > div > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(3) > div:nth-of-type(3) > table > tbody > tr > td:nth-of-type(6) > div > span > span",
+          "variableName": "extractedText",
+          "attribute": "innerText",
+          "useValidation": true,
+          "validationValue": "Selesai",
+          "operator": "contains"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1065,
+        "y": -105
+      }
+    },
+    {
+      "id": "click-1772639788093",
+      "type": "activity",
+      "position": {
+        "x": 1530,
+        "y": -105
+      },
+      "data": {
+        "label": "Click Cari",
+        "type": "click",
+        "properties": {
+          "selector": "div.el-dialog__body > div > div#jmsTopMenu > div > button",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1530,
+        "y": -105
+      },
+      "dragging": false
+    },
+    {
+      "id": "download-file-1772639947363",
+      "type": "activity",
+      "position": {
+        "x": 870,
+        "y": 390
+      },
+      "data": {
+        "label": "Download file Excel",
+        "type": "download-file",
+        "properties": {
+          "url": "",
+          "selector": "div#__qiankun_microapp_wrapper_for_customer_platform_index__ > div > div > div:nth-of-type(6) > div > div > div > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(3) > div:nth-of-type(5) > div:nth-of-type(2) > table > tbody > tr > td:nth-of-type(7) > div > button > span",
+          "savePath": "",
+          "variableName": "downloadPath",
+          "waitForFinish": true,
+          "timeout": 60000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 870,
+        "y": 390
+      }
+    },
+    {
+      "id": "read-csv-1772640437398",
+      "type": "activity",
+      "position": {
+        "x": 1275,
+        "y": 390
+      },
+      "data": {
+        "label": "Read Excel From Download",
+        "type": "read-csv",
+        "properties": {
+          "filePath": "{{downloadPath}}",
+          "variableName": "ReadData",
+          "sheetName": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1275,
+        "y": 390
+      }
+    },
+    {
+      "id": "filter-data-1772640503523",
+      "type": "activity",
+      "position": {
+        "x": 870,
+        "y": 555
+      },
+      "data": {
+        "label": "Filter Data From Download",
+        "type": "filter-data",
+        "properties": {
+          "variableName": "ReadData",
+          "outputVariable": "filteredData",
+          "conditions": [
+            {
+              "column": "Waktu Gagal PU",
+              "operator": "is_empty"
+            },
+            {
+              "column": "Waktu Pickup",
+              "operator": "is_empty"
+            },
+            {
+              "column": "Sumber Order",
+              "operator": "op_not_contains",
+              "value": "TTREVERSE,TOKOREVERSE,APP,WEBSITE,SHOPEE,SHOPEECB,BUKALAPAK,BUKASEND,BUKAEXPRESS,ZALORAMP,ZALORART"
+            }
+          ],
+          "outputPath": "xxx\\filteredData.xlsx",
+          "splitByColumn": "Sumber Order"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 870,
+        "y": 555
+      }
+    },
+    {
+      "id": "delay-1772685851855",
+      "type": "activity",
+      "position": {
+        "x": 450,
+        "y": 555
+      },
+      "data": {
+        "label": "Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 3000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 450,
+        "y": 555
+      }
+    },
+    {
+      "id": "retry-start-1772687028813",
+      "type": "activity",
+      "position": {
+        "x": 240,
+        "y": 720
+      },
+      "data": {
+        "label": "Retry start download until true",
+        "type": "retry-start",
+        "properties": {
+          "maxRetries": 0,
+          "interval": 4000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 240,
+        "y": 720
+      },
+      "dragging": false
+    },
+    {
+      "id": "retry-end-1772687198203",
+      "type": "activity",
+      "position": {
+        "x": 1065,
+        "y": 225
+      },
+      "data": {
+        "label": "Retry end",
+        "type": "retry-end",
+        "properties": {
+          "condition": "{{extractedText}} == Tugas Selesai"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1065,
+        "y": 225
+      },
+      "dragging": false
+    },
+    {
+      "id": "delay-1772689412994",
+      "type": "activity",
+      "position": {
+        "x": 1275,
+        "y": 60
+      },
+      "data": {
+        "label": "Safe Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 4000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1275,
+        "y": 60
+      }
+    },
+    {
+      "id": "click-1772712475471",
+      "type": "activity",
+      "position": {
+        "x": 1275,
+        "y": 720
+      },
+      "data": {
+        "label": "Click Nomor AWB",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsSearch > form > div > div > div > label:nth-of-type(3) > span > span",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1275,
+        "y": 720
+      }
+    },
+    {
+      "id": "click-1772712489211",
+      "type": "activity",
+      "position": {
+        "x": 870,
+        "y": 885
+      },
+      "data": {
+        "label": "Click Input Field",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsSearch > form > div > div > div > div > div > input",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 870,
+        "y": 885
+      }
+    },
+    {
+      "id": "click-1772714648669",
+      "type": "activity",
+      "position": {
+        "x": 1275,
+        "y": 555
+      },
+      "data": {
+        "label": "Click Close Modal",
+        "type": "click",
+        "properties": {
+          "selector": "div#__qiankun_microapp_wrapper_for_customer_platform_index__ > div > div > div:nth-of-type(6) > div > div > div > div > button > i",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1275,
+        "y": 555
+      }
+    },
+    {
+      "id": "batch-slice-data-1772717391804",
+      "type": "activity",
+      "position": {
+        "x": 870,
+        "y": 720
+      },
+      "data": {
+        "label": "Batch from filter by Sumber Order",
+        "type": "batch-slice-data",
+        "properties": {
+          "sourceVariable": "filteredData",
+          "sourceColumn": "Nomor AWB",
+          "batchSize": 999,
+          "outputVariable": "batchData",
+          "offsetVariable": "batchOffset",
+          "sheetName": "",
+          "joinSeparator": ",",
+          "action": "copy"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 870,
+        "y": 720
+      },
+      "dragging": false
+    },
+    {
+      "id": "step-1772720651864",
+      "type": "activity",
+      "position": {
+        "x": 1275,
+        "y": 1215
+      },
+      "data": {
+        "label": "Click Cari",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsTopMenu > div > button > span"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1275,
+        "y": 1215
+      },
+      "dragging": false
+    },
+    {
+      "id": "step-1772720667225",
+      "type": "activity",
+      "position": {
+        "x": 2550,
+        "y": 60
+      },
+      "data": {
+        "label": "Click Select All",
+        "type": "click",
+        "properties": {
+          "selector": "div#__qiankun_microapp_wrapper_for_customer_platform_index__ > div > div > div > div:nth-of-type(3) > div:nth-of-type(4) > div > table > thead > tr > th > div > label > span > span"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 2550,
+        "y": 60
+      }
+    },
+    {
+      "id": "step-1772720672714",
+      "type": "activity",
+      "position": {
+        "x": 2970,
+        "y": 60
+      },
+      "data": {
+        "label": "Click Jadwal Sprinter",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsTopMenu > div > button:nth-of-type(5) > span"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2970,
+        "y": 60
+      },
+      "dragging": false
+    },
+    {
+      "id": "step-1772720716116",
+      "type": "activity",
+      "position": {
+        "x": 2550,
+        "y": 225
+      },
+      "data": {
+        "label": "Type into ",
+        "type": "type-into",
+        "properties": {
+          "selector": "div#__qiankun_microapp_wrapper_for_customer_platform_index__ > div > div > div:nth-of-type(2) > div:nth-of-type(2) > div > div:nth-of-type(2) > form > div > div > div > input",
+          "text": "{{sprinterID}}"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2550,
+        "y": 225
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772722314517",
+      "type": "activity",
+      "position": {
+        "x": 3705,
+        "y": 390
+      },
+      "data": {
+        "label": "Mobile tap Card menunggu pickup",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 277,
+          "y": 425,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[3]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3705,
+        "y": 390
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-find-text-1772722598179",
+      "type": "activity",
+      "position": {
+        "x": 3915,
+        "y": 60
+      },
+      "data": {
+        "label": "Mobile find text \"card\" menunggu pickup",
+        "type": "mobile-find-text",
+        "properties": {
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[3]",
+          "variableName": "isTextFound",
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3915,
+        "y": 60
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772725203818",
+      "type": "activity",
+      "position": {
+        "x": 4125,
+        "y": 390
+      },
+      "data": {
+        "label": "Mobile tap first card",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 540,
+          "y": 879,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[1]/node[0]/node[0]/node[2]/node[0]/node[0]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 4125,
+        "y": 390
+      }
+    },
+    {
+      "id": "delay-1772779428194",
+      "type": "activity",
+      "position": {
+        "x": 870,
+        "y": 1215
+      },
+      "data": {
+        "label": "Safe Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 2000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 870,
+        "y": 1215
+      },
+      "dragging": false
+    },
+    {
+      "id": "if-condition-1772779637993",
+      "type": "activity",
+      "position": {
+        "x": 1275,
+        "y": 885
+      },
+      "data": {
+        "label": "If condition",
+        "type": "if-condition",
+        "properties": {
+          "selector": "div#jmsSearch > form > div > div > div > div > div > span > span > i"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1275,
+        "y": 885
+      },
+      "dragging": false
+    },
+    {
+      "id": "click-1772779655332",
+      "type": "activity",
+      "position": {
+        "x": 870,
+        "y": 1050
+      },
+      "data": {
+        "label": "Click Delete All",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsSearch > form > div > div > div > div > div > span > span > i",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 870,
+        "y": 1050
+      }
+    },
+    {
+      "id": "click-1772785846422",
+      "type": "activity",
+      "position": {
+        "x": 2550,
+        "y": 390
+      },
+      "data": {
+        "label": "Click Menetapkan",
+        "type": "click",
+        "properties": {
+          "selector": "div#__qiankun_microapp_wrapper_for_customer_platform_index__ > div > div > div:nth-of-type(2) > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div > button",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2550,
+        "y": 390
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772786777364",
+      "type": "activity",
+      "position": {
+        "x": 3705,
+        "y": 1560
+      },
+      "data": {
+        "label": "Mobile tap select all",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 186,
+          "y": 2198,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[2]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3705,
+        "y": 1560
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772786830965",
+      "type": "activity",
+      "position": {
+        "x": 4125,
+        "y": 1560
+      },
+      "data": {
+        "label": "Mobile tap failed to pickup",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 281,
+          "y": 2304,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[4]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4125,
+        "y": 1560
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772786994757",
+      "type": "activity",
+      "position": {
+        "x": 3705,
+        "y": 1740
+      },
+      "data": {
+        "label": "Mobile tap reason",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 540,
+          "y": 1611,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[4]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3705,
+        "y": 1740
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772787162708",
+      "type": "activity",
+      "position": {
+        "x": 4125,
+        "y": 1740
+      },
+      "data": {
+        "label": "Mobile tap choose reason",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 540,
+          "y": 867,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[1]/node[0]/node[1]/node[3]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4125,
+        "y": 1740
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772787417634",
+      "type": "activity",
+      "position": {
+        "x": 3705,
+        "y": 1920
+      },
+      "data": {
+        "label": "Mobile tap insert picture",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 1020,
+          "y": 2165,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[9]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3705,
+        "y": 1920
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772787457123",
+      "type": "activity",
+      "position": {
+        "x": 4125,
+        "y": 1920
+      },
+      "data": {
+        "label": "Mobile tap gallery",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 978,
+          "y": 172,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "coordinates",
+          "textToSearch": "Galeri",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4125,
+        "y": 1920
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772794201282",
+      "type": "activity",
+      "position": {
+        "x": 4125,
+        "y": 2100
+      },
+      "data": {
+        "label": "Mobile tap ok",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 716,
+          "y": 2172,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[3]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4125,
+        "y": 2100
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-find-text-1772794292926",
+      "type": "activity",
+      "position": {
+        "x": 4725,
+        "y": 720
+      },
+      "data": {
+        "label": "Mobile find text",
+        "type": "mobile-find-text",
+        "properties": {
+          "textToSearch": "Sudah lakukan percobaan pick up hari ini",
+          "variableName": "successProgress",
+          "deviceId": "ebef1a91"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 4725,
+        "y": 720
+      }
+    },
+    {
+      "id": "retry-start-1772794412879",
+      "type": "activity",
+      "position": {
+        "x": 4650,
+        "y": 555
+      },
+      "data": {
+        "label": "Retry start",
+        "type": "retry-start",
+        "properties": {
+          "maxRetries": 1,
+          "interval": 2000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 4650,
+        "y": 555
+      }
+    },
+    {
+      "id": "mobile-swipe-1772794438489",
+      "type": "activity",
+      "position": {
+        "x": 4980,
+        "y": 885
+      },
+      "data": {
+        "label": "Mobile swipe",
+        "type": "mobile-swipe",
+        "properties": {
+          "startX": 502,
+          "startY": 558,
+          "endX": 515,
+          "endY": 1326,
+          "swipeDuration": 300,
+          "deviceId": "ebef1a91",
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4980,
+        "y": 885
+      },
+      "dragging": false
+    },
+    {
+      "id": "retry-end-1772794496298",
+      "type": "activity",
+      "position": {
+        "x": 4560,
+        "y": 1050
+      },
+      "data": {
+        "label": "Retry end",
+        "type": "retry-end",
+        "properties": {
+          "condition": "{{successProgress}} == \"Sudah lakukan percobaan pick up hari ini\""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 4560,
+        "y": 1050
+      }
+    },
+    {
+      "id": "input-dialog-1772799557391",
+      "type": "activity",
+      "position": {
+        "x": 450,
+        "y": -105
+      },
+      "data": {
+        "label": "Input dialog",
+        "type": "input-dialog",
+        "properties": {
+          "prompt": "ID Nomor Sprinter",
+          "variableName": "sprinterID",
+          "continue-only": false
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 450,
+        "y": -105
+      },
+      "dragging": false
+    },
+    {
+      "id": "delay-1772799717006",
+      "type": "activity",
+      "position": {
+        "x": 45,
+        "y": 225
+      },
+      "data": {
+        "label": "Safe Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 1500
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 45,
+        "y": 225
+      },
+      "dragging": false
+    },
+    {
+      "id": "click-1772800060841",
+      "type": "activity",
+      "position": {
+        "x": 870,
+        "y": 1380
+      },
+      "data": {
+        "label": "Click Page Length",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsPagination > div > span:nth-of-type(2) > div > div > input",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 870,
+        "y": 1380
+      },
+      "dragging": false
+    },
+    {
+      "id": "click-1772800099701",
+      "type": "activity",
+      "position": {
+        "x": 1080,
+        "y": 1545
+      },
+      "data": {
+        "label": "Click 200",
+        "type": "click",
+        "properties": {
+          "selector": "text=200/laman",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1080,
+        "y": 1545
+      },
+      "dragging": false
+    },
+    {
+      "id": "delay-1772800154544",
+      "type": "activity",
+      "position": {
+        "x": 1275,
+        "y": 1380
+      },
+      "data": {
+        "label": "Safe Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 2000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1275,
+        "y": 1380
+      }
+    },
+    {
+      "id": "copy-paste-variable-1772802087568",
+      "type": "activity",
+      "position": {
+        "x": 1275,
+        "y": 1050
+      },
+      "data": {
+        "label": "Copas from var batch",
+        "type": "copy-paste-variable",
+        "properties": {
+          "variableName": "{{batchData}}",
+          "selector": "div#jmsSearch > form > div > div > div > div > div",
+          "clearBeforePaste": false,
+          "nextSheetAfterPaste": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1275,
+        "y": 1050
+      },
+      "dragging": false
+    },
+    {
+      "id": "loop-end-1772805508561",
+      "type": "activity",
+      "position": {
+        "x": 2985,
+        "y": 1080
+      },
+      "data": {
+        "label": "Loop end for batch",
+        "type": "loop-end",
+        "properties": {},
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2985,
+        "y": 1080
+      },
+      "dragging": false
+    },
+    {
+      "id": "repeat-end-1772805759942",
+      "type": "activity",
+      "position": {
+        "x": 5235,
+        "y": 1215
+      },
+      "data": {
+        "label": "progress 5x",
+        "type": "repeat-end",
+        "properties": {},
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 5235,
+        "y": 1215
+      }
+    },
+    {
+      "id": "click-1772891420298",
+      "type": "activity",
+      "position": {
+        "x": 2145,
+        "y": 555
+      },
+      "data": {
+        "label": "Click Confirm",
+        "type": "click",
+        "properties": {
+          "selector": "div.el-message-box__wrapper > div > div:nth-of-type(3) > button:nth-of-type(2)",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2145,
+        "y": 555
+      },
+      "dragging": false
+    },
+    {
+      "id": "delay-1772891626270",
+      "type": "activity",
+      "position": {
+        "x": 2970,
+        "y": 390
+      },
+      "data": {
+        "label": "Safe Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 3000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2970,
+        "y": 390
+      },
+      "dragging": false
+    },
+    {
+      "id": "delay-1772891805428",
+      "type": "activity",
+      "position": {
+        "x": 2970,
+        "y": 225
+      },
+      "data": {
+        "label": "Safe Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 2000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2970,
+        "y": 225
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-find-text-1772894822583",
+      "type": "activity",
+      "position": {
+        "x": 4350,
+        "y": 225
+      },
+      "data": {
+        "label": "Mobile find first card",
+        "type": "mobile-find-text",
+        "properties": {
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[1]/node[0]/node[0]/node[2]/node[0]/node[0]",
+          "variableName": "cardNotExist",
+          "deviceId": "ebef1a91"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 4350,
+        "y": 225
+      }
+    },
+    {
+      "id": "repeat-start-1772895803331",
+      "type": "activity",
+      "position": {
+        "x": 255,
+        "y": 60
+      },
+      "data": {
+        "label": "Repeat start progress 5x",
+        "type": "repeat-start",
+        "properties": {
+          "repeatCount": 5
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 255,
+        "y": 60
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-swipe-1772897753158",
+      "type": "activity",
+      "position": {
+        "x": 4980,
+        "y": 1050
+      },
+      "data": {
+        "label": "Mobile swipe",
+        "type": "mobile-swipe",
+        "properties": {
+          "startX": 502,
+          "startY": 558,
+          "endX": 515,
+          "endY": 1326,
+          "swipeDuration": 300,
+          "deviceId": "",
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4980,
+        "y": 1050
+      },
+      "dragging": false
+    },
+    {
+      "id": "retry-start-1772899496397",
+      "type": "activity",
+      "position": {
+        "x": 3915,
+        "y": -105
+      },
+      "data": {
+        "label": "Retry start",
+        "type": "retry-start",
+        "properties": {
+          "maxRetries": 0,
+          "interval": 1000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 3915,
+        "y": -105
+      }
+    },
+    {
+      "id": "retry-end-1772899515868",
+      "type": "activity",
+      "position": {
+        "x": 4770,
+        "y": 1215
+      },
+      "data": {
+        "label": "Retry end",
+        "type": "retry-end",
+        "properties": {
+          "condition": "{{cardNotExist}} == false"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4770,
+        "y": 1215
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772914353104",
+      "type": "activity",
+      "position": {
+        "x": 3705,
+        "y": 2100
+      },
+      "data": {
+        "label": "Mobile tap first pic",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 159,
+          "y": 786,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[1]/node[1]/node[0]/node[1]/node[0]/node[0]/node[0]/node[1]/node[1]/node[0]/node[0]/node[0]/node[0]/node[0]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3705,
+        "y": 2100
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1772999722031",
+      "type": "activity",
+      "position": {
+        "x": 4605,
+        "y": 390
+      },
+      "data": {
+        "label": "Mobile tap ok",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 805,
+          "y": 2315,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[12]",
+          "isLongPress": false,
+          "waitForIdle": true,
+          "timeout": "1000"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4605,
+        "y": 390
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1773405279884",
+      "type": "activity",
+      "position": {
+        "x": 4125,
+        "y": 555
+      },
+      "data": {
+        "label": "Mobile tap whatsapp Icon",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 613,
+          "y": 964,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[1]/node[0]/node[0]/node[7]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4125,
+        "y": 555
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-screenshot-1773405433688",
+      "type": "activity",
+      "position": {
+        "x": 3705,
+        "y": 720
+      },
+      "data": {
+        "label": "Mobile screenshot",
+        "type": "mobile-screenshot",
+        "properties": {
+          "saveImagePath": "",
+          "variableName": "screenshotPath",
+          "deviceId": "ebef1a91"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3705,
+        "y": 720
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-press-key-1773405472587",
+      "type": "activity",
+      "position": {
+        "x": 4125,
+        "y": 720
+      },
+      "data": {
+        "label": "Mobile press key \"back\"",
+        "type": "mobile-press-key",
+        "properties": {
+          "keycode": "KEYCODE_BACK",
+          "deviceId": "ebef1a91"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 4125,
+        "y": 720
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-press-key-1773405510623",
+      "type": "activity",
+      "position": {
+        "x": 3705,
+        "y": 885
+      },
+      "data": {
+        "label": "Mobile press key \"back\"",
+        "type": "mobile-press-key",
+        "properties": {
+          "keycode": "KEYCODE_BACK",
+          "deviceId": "ebef1a91"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3705,
+        "y": 885
+      },
+      "dragging": false
+    },
+    {
+      "id": "retry-start-1773405608353",
+      "type": "activity",
+      "position": {
+        "x": 3915,
+        "y": 1050
+      },
+      "data": {
+        "label": "Retry start",
+        "type": "retry-start",
+        "properties": {
+          "maxRetries": 3,
+          "interval": 1000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3915,
+        "y": 1050
+      },
+      "dragging": false
+    },
+    {
+      "id": "retry-end-1773405618647",
+      "type": "activity",
+      "position": {
+        "x": 3915,
+        "y": 1380
+      },
+      "data": {
+        "label": "Retry end",
+        "type": "retry-end",
+        "properties": {
+          "condition": "{{selectFound}} == true"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3915,
+        "y": 1380
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-find-text-1773405641887",
+      "type": "activity",
+      "position": {
+        "x": 3915,
+        "y": 1215
+      },
+      "data": {
+        "label": "Mobile find text",
+        "type": "mobile-find-text",
+        "properties": {
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[2]",
+          "variableName": "selectFound",
+          "deviceId": "ebef1a91"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 3915,
+        "y": 1215
+      }
+    },
+    {
+      "id": "delay-1773406315703",
+      "type": "activity",
+      "position": {
+        "x": 45,
+        "y": 390
+      },
+      "data": {
+        "label": "Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 1000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 45,
+        "y": 390
+      },
+      "dragging": false
+    },
+    {
+      "id": "mobile-tap-1773406738291",
+      "type": "activity",
+      "position": {
+        "x": 5235,
+        "y": 360
+      },
+      "data": {
+        "label": "Mobile tap",
+        "type": "mobile-tap",
+        "properties": {
+          "x": 48,
+          "y": 128,
+          "deviceId": "ebef1a91",
+          "tapStrategy": "text",
+          "textToSearch": "xpath:node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]/node[0]",
+          "isLongPress": false,
+          "waitForIdle": true
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 5235,
+        "y": 360
+      },
+      "dragging": false
+    },
+    {
+      "id": "repeat-start-1773408633620",
+      "type": "activity",
+      "position": {
+        "x": 1920,
+        "y": 60
+      },
+      "data": {
+        "label": "Repeat start 5 pages",
+        "type": "repeat-start",
+        "properties": {
+          "repeatCount": 5
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1920,
+        "y": 60
+      },
+      "dragging": false
+    },
+    {
+      "id": "repeat-end-1773408662551",
+      "type": "activity",
+      "position": {
+        "x": 1875,
+        "y": 885
+      },
+      "data": {
+        "label": "Repeat end 5 pages",
+        "type": "repeat-end",
+        "properties": {},
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 1875,
+        "y": 885
+      }
+    },
+    {
+      "id": "if-condition-1773408671579",
+      "type": "activity",
+      "position": {
+        "x": 2970,
+        "y": 555
+      },
+      "data": {
+        "label": "If condition",
+        "type": "if-condition",
+        "properties": {
+          "selector": "div#jmsPagination > div > button:nth-of-type(2):disabled"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2970,
+        "y": 555
+      },
+      "dragging": false
+    },
+    {
+      "id": "delay-1774527135200",
+      "type": "activity",
+      "position": {
+        "x": 3705,
+        "y": 555
+      },
+      "data": {
+        "label": "Delay",
+        "type": "delay",
+        "properties": {
+          "duration": 2000
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3705,
+        "y": 555
+      },
+      "dragging": false
+    },
+    {
+      "id": "step-1776486031397",
+      "type": "activity",
+      "position": {
+        "x": 3195,
+        "y": 720
+      },
+      "data": {
+        "label": "Click div#jmsPagination > div > button:nth-of-type(2) > i",
+        "type": "click",
+        "properties": {
+          "selector": "div#jmsPagination > div > button:nth-of-type(2) > i"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 3195,
+        "y": 720
+      }
+    },
+    {
+      "id": "extract-text-1776486992710",
+      "type": "activity",
+      "position": {
+        "x": 1920,
+        "y": 225
+      },
+      "data": {
+        "label": "Extract text",
+        "type": "extract-text",
+        "properties": {
+          "selector": "div#jmsPagination > div > span",
+          "variableName": "extractedText",
+          "attribute": "innerText",
+          "useValidation": true,
+          "validationValue": "total 0",
+          "operator": "equals"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 1920,
+        "y": 225
+      },
+      "dragging": false
+    },
+    {
+      "id": "click-1776487631608",
+      "type": "activity",
+      "position": {
+        "x": 2550,
+        "y": 555
+      },
+      "data": {
+        "label": "Click",
+        "type": "click",
+        "properties": {
+          "selector": "div#__qiankun_microapp_wrapper_for_customer_platform_index__ > div > div > div:nth-of-type(2) > div",
+          "type": "left",
+          "href": ""
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2550,
+        "y": 555
+      },
+      "dragging": false
+    },
+    {
+      "id": "log-message-1776497294056",
+      "type": "activity",
+      "position": {
+        "x": 3915,
+        "y": -270
+      },
+      "data": {
+        "label": "Run here If Only Run Mobile",
+        "type": "log-message",
+        "properties": {
+          "message": "Mobile Run"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 3915,
+        "y": -270
+      },
+      "dragging": false
+    },
+    {
+      "id": "open-browser-1776497381254",
+      "type": "activity",
+      "position": {
+        "x": 2760,
+        "y": -540
+      },
+      "data": {
+        "label": "Open browser",
+        "type": "open-browser",
+        "properties": {
+          "url": "https://google.com"
+        },
+        "isActive": false
+      },
+      "width": 350,
+      "height": 76,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 2760,
+        "y": -540
+      },
+      "dragging": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-step-1772639708586-step-1772639712942",
+      "source": "step-1772639708586",
+      "target": "step-1772639712942",
+      "selected": false
+    },
+    {
+      "id": "e-download-file-1772639947363-read-csv-1772640437398",
+      "source": "download-file-1772639947363",
+      "target": "read-csv-1772640437398",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-read-csv-1772640437398-filter-data-1772640503523",
+      "source": "read-csv-1772640437398",
+      "target": "filter-data-1772640503523",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#f43f5e"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#f43f5e"
+      },
+      "source": "extract-text-1772639725804",
+      "sourceHandle": "false",
+      "target": "click-1772639788093",
+      "targetHandle": null,
+      "id": "reactflow__edge-extract-text-1772639725804false-click-1772639788093",
+      "selected": false
+    },
+    {
+      "id": "e-step-1772639712942-delay-1772685851855",
+      "source": "step-1772639712942",
+      "target": "delay-1772685851855",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-delay-1772685851855-retry-start-1772687028813",
+      "source": "delay-1772685851855",
+      "target": "retry-start-1772687028813",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-retry-start-1772687028813-extract-text-1772639725804",
+      "source": "retry-start-1772687028813",
+      "target": "extract-text-1772639725804",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#10b981"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#10b981"
+      },
+      "source": "extract-text-1772639725804",
+      "sourceHandle": "true",
+      "target": "retry-end-1772687198203",
+      "targetHandle": null,
+      "id": "reactflow__edge-extract-text-1772639725804true-retry-end-1772687198203",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "retry-end-1772687198203",
+      "sourceHandle": null,
+      "target": "download-file-1772639947363",
+      "targetHandle": null,
+      "id": "reactflow__edge-retry-end-1772687198203-download-file-1772639947363",
+      "selected": false
+    },
+    {
+      "id": "e-click-1772639788093-delay-1772689412994",
+      "source": "click-1772639788093",
+      "target": "delay-1772689412994",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-delay-1772689412994-retry-end-1772687198203",
+      "source": "delay-1772689412994",
+      "target": "retry-end-1772687198203",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-click-1772712475471-click-1772712489211",
+      "source": "click-1772712475471",
+      "target": "click-1772712489211",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-click-1772714648669-batch-slice-data-1772717391804",
+      "source": "click-1772714648669",
+      "target": "batch-slice-data-1772717391804",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-batch-slice-data-1772717391804-click-1772712475471",
+      "source": "batch-slice-data-1772717391804",
+      "target": "click-1772712475471",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#10b981"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#10b981"
+      },
+      "source": "mobile-find-text-1772722598179",
+      "sourceHandle": "true",
+      "target": "mobile-tap-1772722314517",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-find-text-1772722598179true-mobile-tap-1772722314517",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "mobile-tap-1772722314517",
+      "sourceHandle": null,
+      "target": "mobile-tap-1772725203818",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-tap-1772722314517-mobile-tap-1772725203818",
+      "selected": false
+    },
+    {
+      "id": "e-click-1772712489211-if-condition-1772779637993",
+      "source": "click-1772712489211",
+      "target": "if-condition-1772779637993",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#10b981"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#10b981"
+      },
+      "source": "if-condition-1772779637993",
+      "sourceHandle": "true",
+      "target": "click-1772779655332",
+      "targetHandle": null,
+      "id": "reactflow__edge-if-condition-1772779637993true-click-1772779655332",
+      "selected": false
+    },
+    {
+      "id": "e-mobile-tap-1772786777364-mobile-tap-1772786830965",
+      "source": "mobile-tap-1772786777364",
+      "target": "mobile-tap-1772786830965",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-mobile-tap-1772786994757-mobile-tap-1772787162708",
+      "source": "mobile-tap-1772786994757",
+      "target": "mobile-tap-1772787162708",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-mobile-tap-1772787162708-mobile-tap-1772787417634",
+      "source": "mobile-tap-1772787162708",
+      "target": "mobile-tap-1772787417634",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-retry-start-1772794412879-mobile-find-text-1772794292926",
+      "source": "retry-start-1772794412879",
+      "target": "mobile-find-text-1772794292926",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "delay-1772779428194",
+      "sourceHandle": null,
+      "target": "step-1772720651864",
+      "targetHandle": null,
+      "id": "reactflow__edge-delay-1772779428194-step-1772720651864",
+      "selected": false
+    },
+    {
+      "id": "e-step-1772720672714-step-1772720716116",
+      "source": "step-1772720672714",
+      "target": "step-1772720716116",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-click-1772800060841-delay-1772800154544",
+      "source": "click-1772800060841",
+      "target": "delay-1772800154544",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-delay-1772800154544-click-1772800099701",
+      "source": "delay-1772800154544",
+      "target": "click-1772800099701",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-click-1772779655332-copy-paste-variable-1772802087568",
+      "source": "click-1772779655332",
+      "target": "copy-paste-variable-1772802087568",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#f43f5e"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#f43f5e"
+      },
+      "source": "if-condition-1772779637993",
+      "sourceHandle": "false",
+      "target": "copy-paste-variable-1772802087568",
+      "targetHandle": null,
+      "id": "reactflow__edge-if-condition-1772779637993false-copy-paste-variable-1772802087568",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "copy-paste-variable-1772802087568",
+      "sourceHandle": null,
+      "target": "delay-1772779428194",
+      "targetHandle": null,
+      "id": "reactflow__edge-copy-paste-variable-1772802087568-delay-1772779428194",
+      "selected": false
+    },
+    {
+      "id": "e-click-1772785846422-delay-1772891626270",
+      "source": "click-1772785846422",
+      "target": "delay-1772891626270",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "step-1772720667225",
+      "sourceHandle": null,
+      "target": "step-1772720672714",
+      "targetHandle": null,
+      "id": "reactflow__edge-step-1772720667225-step-1772720672714",
+      "selected": false
+    },
+    {
+      "id": "e-step-1772720716116-delay-1772891805428",
+      "source": "step-1772720716116",
+      "target": "delay-1772891805428",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-delay-1772891805428-click-1772785846422",
+      "source": "delay-1772891805428",
+      "target": "click-1772785846422",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-mobile-find-text-1772722598179-mobile-find-text-1772894822583",
+      "source": "mobile-find-text-1772722598179",
+      "target": "mobile-find-text-1772894822583",
+      "sourceHandle": "false",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#f43f5e"
+      },
+      "style": {
+        "stroke": "#f43f5e",
+        "strokeWidth": 2
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#10b981"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#10b981"
+      },
+      "source": "mobile-find-text-1772794292926",
+      "sourceHandle": "true",
+      "target": "retry-end-1772794496298",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-find-text-1772794292926true-retry-end-1772794496298",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#f43f5e"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#f43f5e"
+      },
+      "source": "mobile-find-text-1772794292926",
+      "sourceHandle": "false",
+      "target": "mobile-swipe-1772794438489",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-find-text-1772794292926false-mobile-swipe-1772794438489",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "mobile-swipe-1772794438489",
+      "sourceHandle": null,
+      "target": "retry-end-1772794496298",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-swipe-1772794438489-retry-end-1772794496298",
+      "selected": false
+    },
+    {
+      "id": "e-retry-end-1772794496298-mobile-swipe-1772897753158",
+      "source": "retry-end-1772794496298",
+      "target": "mobile-swipe-1772897753158",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-retry-start-1772899496397-mobile-find-text-1772722598179",
+      "source": "retry-start-1772899496397",
+      "target": "mobile-find-text-1772722598179",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-mobile-swipe-1772897753158-retry-end-1772899515868",
+      "source": "mobile-swipe-1772897753158",
+      "target": "retry-end-1772899515868",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "filter-data-1772640503523",
+      "sourceHandle": null,
+      "target": "click-1772714648669",
+      "targetHandle": null,
+      "id": "reactflow__edge-filter-data-1772640503523-click-1772714648669"
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#10b981"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#10b981"
+      },
+      "source": "mobile-find-text-1772894822583",
+      "sourceHandle": "true",
+      "target": "mobile-tap-1772725203818",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-find-text-1772894822583true-mobile-tap-1772725203818",
+      "selected": false
+    },
+    {
+      "id": "e-mobile-tap-1772787457123-mobile-tap-1772914353104",
+      "source": "mobile-tap-1772787457123",
+      "target": "mobile-tap-1772914353104",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "mobile-tap-1772914353104",
+      "sourceHandle": null,
+      "target": "mobile-tap-1772794201282",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-tap-1772914353104-mobile-tap-1772794201282",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "mobile-tap-1772786830965",
+      "sourceHandle": null,
+      "target": "mobile-tap-1772786994757",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-tap-1772786830965-mobile-tap-1772786994757",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "mobile-tap-1772787417634",
+      "sourceHandle": null,
+      "target": "mobile-tap-1772787457123",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-tap-1772787417634-mobile-tap-1772787457123",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "mobile-tap-1772999722031",
+      "sourceHandle": null,
+      "target": "retry-start-1772794412879",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-tap-1772999722031-retry-start-1772794412879",
+      "selected": false
+    },
+    {
+      "id": "e-mobile-tap-1773405279884-mobile-screenshot-1773405433688",
+      "source": "mobile-tap-1773405279884",
+      "target": "mobile-screenshot-1773405433688",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-mobile-screenshot-1773405433688-mobile-press-key-1773405472587",
+      "source": "mobile-screenshot-1773405433688",
+      "target": "mobile-press-key-1773405472587",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-mobile-press-key-1773405472587-mobile-press-key-1773405510623",
+      "source": "mobile-press-key-1773405472587",
+      "target": "mobile-press-key-1773405510623",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-mobile-press-key-1773405510623-retry-start-1773405608353",
+      "source": "mobile-press-key-1773405510623",
+      "target": "retry-start-1773405608353",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-retry-end-1773405618647-mobile-tap-1772786777364",
+      "source": "retry-end-1773405618647",
+      "target": "mobile-tap-1772786777364",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-retry-start-1773405608353-mobile-find-text-1773405641887",
+      "source": "retry-start-1773405608353",
+      "target": "mobile-find-text-1773405641887",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#10b981"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#10b981"
+      },
+      "source": "mobile-find-text-1773405641887",
+      "sourceHandle": "true",
+      "target": "retry-end-1773405618647",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-find-text-1773405641887true-retry-end-1773405618647",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#f43f5e"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#f43f5e"
+      },
+      "source": "mobile-find-text-1773405641887",
+      "sourceHandle": "false",
+      "target": "retry-end-1773405618647",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-find-text-1773405641887false-retry-end-1773405618647",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "repeat-start-1772895803331",
+      "sourceHandle": null,
+      "target": "delay-1772799717006",
+      "targetHandle": null,
+      "id": "reactflow__edge-repeat-start-1772895803331-delay-1772799717006",
+      "selected": false
+    },
+    {
+      "id": "e-delay-1772799717006-step-1772639704148",
+      "source": "delay-1772799717006",
+      "target": "step-1772639704148",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-step-1772639704148-delay-1773406315703",
+      "source": "step-1772639704148",
+      "target": "delay-1773406315703",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-delay-1773406315703-step-1772639708586",
+      "source": "delay-1773406315703",
+      "target": "step-1772639708586",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "delay-1772891626270",
+      "sourceHandle": null,
+      "target": "click-1772891420298",
+      "targetHandle": null,
+      "id": "reactflow__edge-delay-1772891626270-click-1772891420298",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "start",
+      "sourceHandle": null,
+      "target": "input-dialog-1772799557391",
+      "targetHandle": null,
+      "id": "reactflow__edge-start-input-dialog-1772799557391",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "input-dialog-1772799557391",
+      "sourceHandle": null,
+      "target": "repeat-start-1772895803331",
+      "targetHandle": null,
+      "id": "reactflow__edge-input-dialog-1772799557391-repeat-start-1772895803331",
+      "selected": false
+    },
+    {
+      "id": "e-mobile-find-text-1772894822583-mobile-tap-1773406738291",
+      "source": "mobile-find-text-1772894822583",
+      "target": "mobile-tap-1773406738291",
+      "sourceHandle": "false",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#f43f5e"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#f43f5e"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-click-1772800099701-repeat-start-1773408633620",
+      "source": "click-1772800099701",
+      "target": "repeat-start-1773408633620",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "mobile-tap-1772794201282",
+      "sourceHandle": null,
+      "target": "mobile-tap-1772999722031",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-tap-1772794201282-mobile-tap-1772999722031",
+      "selected": false
+    },
+    {
+      "id": "e-mobile-tap-1772725203818-delay-1774527135200",
+      "source": "mobile-tap-1772725203818",
+      "target": "delay-1774527135200",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-delay-1774527135200-mobile-tap-1773405279884",
+      "source": "delay-1774527135200",
+      "target": "mobile-tap-1773405279884",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "step-1776486031397",
+      "sourceHandle": null,
+      "target": "repeat-end-1773408662551",
+      "targetHandle": null,
+      "id": "reactflow__edge-step-1776486031397-repeat-end-1773408662551",
+      "selected": false
+    },
+    {
+      "id": "e-repeat-start-1773408633620-extract-text-1776486992710",
+      "source": "repeat-start-1773408633620",
+      "target": "extract-text-1776486992710",
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#10b981"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#10b981"
+      },
+      "source": "extract-text-1776486992710",
+      "sourceHandle": "true",
+      "target": "repeat-end-1773408662551",
+      "targetHandle": null,
+      "id": "reactflow__edge-extract-text-1776486992710true-repeat-end-1773408662551",
+      "selected": false
+    },
+    {
+      "id": "e-click-1772891420298-click-1776487631608",
+      "source": "click-1772891420298",
+      "target": "click-1776487631608",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "id": "e-click-1776487631608-if-condition-1773408671579",
+      "source": "click-1776487631608",
+      "target": "if-condition-1773408671579",
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#f43f5e"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#f43f5e"
+      },
+      "source": "if-condition-1773408671579",
+      "sourceHandle": "false",
+      "target": "step-1776486031397",
+      "targetHandle": null,
+      "id": "reactflow__edge-if-condition-1773408671579false-step-1776486031397",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#10b981"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#10b981"
+      },
+      "source": "if-condition-1773408671579",
+      "sourceHandle": "true",
+      "target": "repeat-end-1773408662551",
+      "targetHandle": null,
+      "id": "reactflow__edge-if-condition-1773408671579true-repeat-end-1773408662551",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "mobile-tap-1773406738291",
+      "sourceHandle": null,
+      "target": "repeat-end-1772805759942",
+      "targetHandle": null,
+      "id": "reactflow__edge-mobile-tap-1773406738291-repeat-end-1772805759942",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "retry-end-1772899515868",
+      "sourceHandle": null,
+      "target": "repeat-end-1772805759942",
+      "targetHandle": null,
+      "id": "reactflow__edge-retry-end-1772899515868-repeat-end-1772805759942",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "step-1772720651864",
+      "sourceHandle": null,
+      "target": "click-1772800060841",
+      "targetHandle": null,
+      "id": "reactflow__edge-step-1772720651864-click-1772800060841"
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "repeat-end-1773408662551",
+      "sourceHandle": null,
+      "target": "loop-end-1772805508561",
+      "targetHandle": null,
+      "id": "reactflow__edge-repeat-end-1773408662551-loop-end-1772805508561",
+      "selected": false
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#f43f5e"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#f43f5e"
+      },
+      "source": "extract-text-1776486992710",
+      "sourceHandle": "false",
+      "target": "step-1772720667225",
+      "targetHandle": null,
+      "id": "reactflow__edge-extract-text-1776486992710false-step-1772720667225",
+      "selected": false
+    },
+    {
+      "id": "e-loop-end-1772805508561-log-message-1776497294056",
+      "source": "loop-end-1772805508561",
+      "target": "log-message-1776497294056",
+      "sourceHandle": null,
+      "type": "smoothstep",
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      }
+    },
+    {
+      "type": "smoothstep",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#94a3b8"
+      },
+      "style": {
+        "strokeWidth": 2,
+        "stroke": "#94a3b8"
+      },
+      "source": "log-message-1776497294056",
+      "sourceHandle": null,
+      "target": "retry-start-1772899496397",
+      "targetHandle": null,
+      "id": "reactflow__edge-log-message-1776497294056-retry-start-1772899496397"
+    }
+  ]
+}

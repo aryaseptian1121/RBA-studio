@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:*; frame-ancestors 'none';">
+<title>RBA Studio Pro 2.0</title>
+<style>
+/* ── TOKENS ─────────────────────────────────────── */
+:root {
+  --bg: #070c18; --bg2: #0d1529; --bg3: #111827; --card: #0f1a2e;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.06);
+  --accent: #3b82f6; --accent2: #6366f1; --green: #10b981; --red: #ef4444;
+  --orange: #f97316; --yellow: #eab308; --purple: #a855f7;
+  --text: #f1f5f9; --dim: #64748b; --dim2: #94a3b8;
+  --radius: 16px; --radius-sm: 10px;
+  --glow-blue: 0 0 20px rgba(59,130,246,0.35);
+  --glow-green: 0 0 20px rgba(16,185,129,0.35);
+}
+[data-theme="light"] {
+  --bg:#f0f4ff; --bg2:#ffffff; --bg3:#f8faff; --card:#ffffff;
+  --border:#dde3f0; --border2:#e8edf8;
+  --text:#1e293b; --dim:#64748b; --dim2:#94a3b8;
+}
+
+/* ── RESET ──────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter','Segoe UI',Arial,sans-serif;}
+body{background:var(--bg);color:var(--text);height:100vh;overflow:hidden;user-select:none;}
+
+/* ── LAYOUT ─────────────────────────────────────── */
+.shell{display:flex;height:100vh;}
+.sidebar{width:68px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0 12px;gap:4px;z-index:200;flex-shrink:0;}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;}
+header{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;}
+
+/* ── SIDEBAR ICONS ───────────────────────────────── */
+.nav-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dim2);font-size:18px;transition:all .2s;position:relative;}
+.nav-ico:hover{background:rgba(255,255,255,0.06);color:var(--text);}
+.nav-ico.active{background:var(--accent);color:#fff;box-shadow:var(--glow-blue);}
+.nav-ico .tooltip{position:absolute;left:56px;background:rgba(15,23,42,0.95);color:#fff;font-size:11px;white-space:nowrap;padding:5px 10px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .15s;border:1px solid var(--border);}
+.nav-ico:hover .tooltip{opacity:1;}
+.sidebar-sep{width:36px;height:1px;background:var(--border);margin:6px 0;}
+
+/* ── HEADER ──────────────────────────────────────── */
+.hdr-logo{font-weight:800;font-size:14px;letter-spacing:.04em;background:linear-gradient(135deg,#60a5fa,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hdr-project{font-size:13px;font-weight:600;color:var(--dim2);cursor:pointer;padding:4px 10px;border-radius:8px;border:1px solid var(--border2);}
+.hdr-project:hover{border-color:var(--accent);color:var(--text);}
+.hdr-spacer{flex:1;}
+.hdr-badge{display:flex;align-items:center;gap:6px;font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;}
+.hdr-badge.online{border-color:var(--green);color:var(--green);background:rgba(16,185,129,0.1);}
+.hdr-badge.offline{border-color:var(--red);color:var(--red);background:rgba(239,68,68,0.08);}
+.hdr-dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
+.hdr-btn{border:none;background:rgba(255,255,255,0.07);color:var(--text);border-radius:10px;padding:7px 14px;font-size:12px;cursor:pointer;transition:.15s;border:1px solid var(--border2);}
+.hdr-btn:hover{background:rgba(255,255,255,0.12);}
+.hdr-btn.primary{background:var(--accent);color:#fff;border-color:transparent;}
+.hdr-btn.primary:hover{background:#2563eb;}
+.hdr-btn.danger{background:var(--red);color:#fff;border-color:transparent;}
+
+/* ── VIEWS ───────────────────────────────────────── */
+.view{display:none;flex:1;overflow:hidden;}
+.view.active{display:flex;flex-direction:column;}
+
+/* ── EDITOR LAYOUT ───────────────────────────────── */
+.editor-shell{display:flex;flex:1;overflow:hidden;gap:0;}
+.left-panel{width:256px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.right-panel{width:300px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.canvas-zone{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.log-strip{height:220px;border-top:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;transition:height .25s;}
+.log-strip.collapsed{height:36px;}
+
+/* ── PANEL COMMON ────────────────────────────────── */
+.panel-hdr{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--dim);padding:14px 16px 10px;border-bottom:1px solid var(--border2);text-transform:uppercase;}
+.panel-body{flex:1;overflow-y:auto;padding:12px;}
+.panel-body::-webkit-scrollbar{width:4px;}
+.panel-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+
+/* ── SEARCH ──────────────────────────────────────── */
+.search-bar{margin:10px 12px 8px;position:relative;}
+.search-bar input{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:8px 12px 8px 32px;font-size:12px;outline:none;}
+.search-bar input:focus{border-color:var(--accent);}
+.search-bar::before{content:'🔍';position:absolute;left:10px;top:9px;font-size:11px;}
+
+/* ── SECTION TITLE ───────────────────────────────── */
+.sec{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:.1em;padding:14px 4px 6px;text-transform:uppercase;}
+
+/* ── TOOL CARDS ──────────────────────────────────── */
+.tool-card{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid transparent;color:var(--text);font-size:12px;font-weight:500;transition:.15s;width:100%;text-align:left;}
+.tool-card:hover{background:rgba(255,255,255,0.06);border-color:var(--border);}
+.tool-card .tc-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.tool-card .tc-lbl strong{display:block;font-size:12px;}
+.tool-card .tc-lbl span{font-size:10px;color:var(--dim2);}
+
+/* ── TOOLBAR ─────────────────────────────────────── */
+.toolbar{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg2);flex-wrap:wrap;flex-shrink:0;}
+.tb-btn{border:none;background:rgba(255,255,255,0.06);color:var(--text);border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;transition:.15s;border:1px solid var(--border2);white-space:nowrap;}
+.tb-btn:hover{background:rgba(255,255,255,0.12);}
+.tb-btn.active{background:rgba(59,130,246,0.2);border-color:rgba(59,130,246,0.5);color:#93c5fd;}
+.tb-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;}
+.tb-run{background:var(--green)!important;color:#fff!important;border-color:transparent!important;}
+.tb-run:hover{background:#059669!important;}
+.tb-stop{background:var(--red)!important;color:#fff!important;border-color:transparent!important;}
+.tb-stop:hover{background:#dc2626!important;}
+
+/* ── CANVAS ──────────────────────────────────────── */
+.canvas-area{flex:1;position:relative;overflow:hidden;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle, rgba(59,130,246,0.04) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+  background-size: 20px 20px, 100px 100px, 100px 100px;
+  cursor:grab;
+}
+.canvas-area:active{cursor:grabbing;}
+#canvas-wrapper{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;}
+#svg-layer{position:absolute;top:0;left:0;width:12000px;height:9000px;pointer-events:all;overflow:visible;}
+
+/* ── NODES ───────────────────────────────────────── */
+.node{
+  position:absolute;width:200px;background:var(--card);
+  border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;
+  padding:12px 14px;cursor:move;color:var(--text);
+  box-shadow:0 4px 24px rgba(0,0,0,0.4);z-index:10;
+  transition:border-color .2s, box-shadow .2s;
+  display:flex;align-items:center;gap:12px;
+}
+.node:hover{border-color:rgba(255,255,255,0.25);box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+.node.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px rgba(59,130,246,0.3), 0 8px 32px rgba(0,0,0,0.5);}
+.node.running{border-color:var(--yellow)!important;animation:pulse-node 1s infinite;}
+.node.success{border-color:var(--green)!important;}
+.node.error{border-color:var(--red)!important;}
+.node-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.node-body{min-width:0;}
+.node-lbl{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.node-type{font-size:10px;color:var(--dim2);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;}
+.node-port{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);top:50%;transform:translateY(-50%);cursor:crosshair;z-index:20;}
+.node-port.out{right:-5px;}
+.node-port.in{left:-5px;}
+.node-status-bar{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 12px 12px;background:transparent;transition:.2s;}
+.node.running .node-status-bar{background:var(--yellow);}
+.node.success .node-status-bar{background:var(--green);}
+.node.error   .node-status-bar{background:var(--red);}
+.node-step-num{position:absolute;top:-8px;left:8px;font-size:9px;font-weight:700;background:var(--accent);color:#fff;border-radius:4px;padding:1px 5px;}
+
+@keyframes pulse-node{0%,100%{box-shadow:0 0 0 2px rgba(234,179,8,0.5);}50%{box-shadow:0 0 0 6px rgba(234,179,8,0.0);}}
+
+.flow-edge{fill:none;stroke-width:2;stroke-linecap:round;cursor:pointer;pointer-events:stroke;transition:stroke-width .2s,opacity .2s;}
+.flow-edge:hover{stroke-width:3;}
+.flow-edge.selected{stroke-width:3;filter:drop-shadow(0 0 6px currentColor);}
+.flow-edge.active-run{stroke-dasharray:10,5;animation:dash-anim 0.6s linear infinite;}
+@keyframes dash-anim{to{stroke-dashoffset:-15;}}
+
+/* ── CONTEXT MENU ────────────────────────────────── */
+.ctx-menu{position:fixed;background:rgba(13,21,41,0.98);border:1px solid var(--border);border-radius:10px;padding:6px;z-index:9999;min-width:180px;box-shadow:0 16px 48px rgba(0,0,0,0.6);backdrop-filter:blur(10px);}
+.ctx-item{padding:7px 12px;font-size:12px;cursor:pointer;border-radius:6px;color:var(--text);display:flex;align-items:center;gap:8px;transition:.12s;}
+.ctx-item:hover{background:rgba(59,130,246,0.18);}
+.ctx-item.danger:hover{background:rgba(239,68,68,0.18);color:var(--red);}
+.ctx-item .ctx-ico{width:16px;text-align:center;}
+.ctx-sep{height:1px;background:var(--border);margin:4px 0;}
+.ctx-sub{color:var(--dim);font-size:10px;font-weight:700;letter-spacing:.08em;padding:6px 12px 2px;text-transform:uppercase;}
+
+/* ── PROPERTIES PANEL ────────────────────────────── */
+.prop-group{margin-bottom:16px;}
+.prop-label{font-size:10px;font-weight:700;color:var(--dim2);letter-spacing:.06em;margin-bottom:5px;display:block;text-transform:uppercase;}
+.prop-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px;font-size:12px;outline:none;transition:.15s;}
+.prop-input:focus{border-color:var(--accent);background:rgba(59,130,246,0.06);}
+.prop-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%2364748b'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.prop-sep{height:1px;background:var(--border2);margin:14px 0;}
+.prop-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.prop-ico-big{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.prop-empty{color:var(--dim);text-align:center;padding:48px 16px;font-size:12px;line-height:1.7;}
+.btn-full{width:100%;padding:9px;border:none;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;transition:.15s;margin-bottom:6px;}
+.btn-delete{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.25);}
+.btn-delete:hover{background:var(--red);color:#fff;}
+.btn-dup{background:rgba(99,102,241,0.15);color:#c4b5fd;border:1px solid rgba(99,102,241,0.25);}
+.btn-dup:hover{background:var(--accent2);color:#fff;}
+.btn-run-step{background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.25);}
+.btn-run-step:hover{background:var(--green);color:#fff;}
+.btn-draw-conn{background:rgba(59,130,246,0.12);color:#93c5fd;border:1px solid rgba(59,130,246,0.25);}
+.btn-draw-conn:hover{background:var(--accent);color:#fff;}
+.prop-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* ── DEVICE CARD ─────────────────────────────────── */
+.dev-section{margin-top:auto;padding:12px;border-top:1px solid var(--border);}
+.dev-label{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase;}
+.dev-select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:7px 10px;font-size:11px;}
+.dev-actions{display:flex;gap:6px;margin-top:8px;}
+.dev-btn{flex:1;border:none;border-radius:7px;padding:6px;font-size:10px;cursor:pointer;font-weight:600;transition:.15s;}
+.dev-btn.refresh{background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.2);}
+.dev-btn.scrcpy{background:rgba(168,85,247,0.15);color:#c4b5fd;border:1px solid rgba(168,85,247,0.2);}
+.dev-btn:hover{filter:brightness(1.3);}
+
+/* ── LOG PANEL ───────────────────────────────────── */
+.log-hdr{height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;cursor:pointer;border-bottom:1px solid var(--border2);flex-shrink:0;}
+.log-hdr-title{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--dim);display:flex;align-items:center;gap:8px;}
+.log-hdr-actions{display:flex;gap:6px;}
+.log-body{display:flex;flex:1;overflow:hidden;}
+.log-output{flex:1;overflow-y:auto;padding:8px 14px;font-family:'Consolas','Courier New',monospace;font-size:11px;line-height:1.7;color:#94a3b8;}
+.log-output .log-info{color:#94a3b8;}
+.log-output .log-warn{color:#fbbf24;}
+.log-output .log-error{color:#f87171;}
+.log-output .log-success{color:#34d399;}
+.log-output .log-ts{color:#475569;}
+.log-stats{width:200px;border-left:1px solid var(--border2);padding:12px;flex-shrink:0;}
+.stat-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;}
+.stat-val{font-weight:700;color:var(--text);}
+
+/* ── DASHBOARD ───────────────────────────────────── */
+.dash-view{padding:32px;overflow-y:auto;flex:1;}
+.dash-title{font-size:22px;font-weight:800;margin-bottom:6px;}
+.dash-sub{font-size:13px;color:var(--dim2);margin-bottom:28px;}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:28px;}
+.dash-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px;}
+.dash-summary .dash-card{cursor:default;}
+.dash-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:.2s;}
+.dash-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+.dash-card-ico{font-size:24px;margin-bottom:10px;}
+.dash-card-ttl{font-size:13px;font-weight:700;margin-bottom:4px;}
+.dash-card-sub{font-size:11px;color:var(--dim2);}
+.wf-list-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.wf-list-hdr{padding:14px 20px;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:space-between;}
+.wf-item{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border2);transition:.15s;}
+.wf-item:last-child{border-bottom:none;}
+.wf-item:hover{background:rgba(255,255,255,0.03);}
+.wf-item-ico{width:36px;height:36px;border-radius:8px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.wf-item-body{flex:1;min-width:0;}
+.wf-item-name{font-size:12px;font-weight:700;}
+.wf-item-meta{font-size:10px;color:var(--dim2);}
+.wf-item-actions{display:flex;gap:6px;}
+.wf-item-btn{border:none;border-radius:6px;padding:5px 10px;font-size:10px;cursor:pointer;font-weight:600;}
+.wf-item-btn.open{background:rgba(59,130,246,0.15);color:#93c5fd;}
+.wf-item-btn.del{background:rgba(239,68,68,0.12);color:var(--red);}
+
+/* ── SETTINGS ────────────────────────────────────── */
+.settings-view{padding:32px;overflow-y:auto;flex:1;}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.setting-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.setting-card-ttl{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-bottom:16px;}
+
+/* ── MINIMAP ─────────────────────────────────────── */
+#minimap{position:absolute;bottom:16px;right:16px;width:180px;height:130px;background:rgba(7,12,24,0.9);border:1px solid var(--border);border-radius:10px;overflow:hidden;z-index:50;display:none;}
+#minimap canvas{width:100%;height:100%;}
+.minimap-viewport{position:absolute;border:1px solid rgba(59,130,246,0.6);pointer-events:none;}
+
+/* ── ZOOM INDICATOR ──────────────────────────────── */
+.zoom-badge{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(13,21,41,0.85);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--dim2);pointer-events:none;z-index:30;}
+
+/* ── TEMP LINE ───────────────────────────────────── */
+#temp-line{pointer-events:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:6,3;fill:none;}
+
+/* ── TOGGLE ──────────────────────────────────────── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.toggle-row label{font-size:12px;color:var(--dim2);}
+.toggle{position:relative;width:36px;height:20px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,0.1);border-radius:20px;cursor:pointer;transition:.2s;}
+.toggle input:checked+.toggle-slider{background:var(--accent);}
+.toggle-slider::after{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;}
+.toggle input:checked+.toggle-slider::after{transform:translateX(16px);}
+
+/* ── REC INDICATOR ───────────────────────────────── */
+.rec-badge{display:none;align-items:center;gap:6px;font-size:11px;color:var(--red);animation:blink 1s step-start infinite;}
+@keyframes blink{50%{opacity:0;}}
+.rec-badge.active{display:flex;}
+.rec-dot{width:8px;height:8px;border-radius:50%;background:var(--red);}
+
+/* ── SCROLLBARS ──────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-ico active" id="nav-dash" onclick="switchView('dashboard')" title="">
+      ⊞<span class="tooltip">Dashboard</span>
+    </div>
+    <div class="nav-ico" id="nav-edit" onclick="switchView('editor')" title="">
+      ⚡<span class="tooltip">Studio Editor</span>
+    </div>
+    <div class="nav-ico" id="nav-rec" onclick="switchView('recorder')" title="">
+      🎬<span class="tooltip">Macro Recorder</span>
+    </div>
+    <div class="nav-ico" id="nav-set" onclick="switchView('settings')" title="">
+      ⚙️<span class="tooltip">Settings</span>
+    </div>
+    <div class="sidebar-sep"></div>
+    <div class="nav-ico" onclick="toggleTheme()" title="">
+      🌓<span class="tooltip">Toggle Theme</span>
+    </div>
+    <div class="nav-ico" onclick="showAdbInfo()" title="" style="margin-top:auto;">
+      📱<span class="tooltip">ADB Info</span>
+    </div>
+  </nav>
+
+  <div class="main">
+    <!-- HEADER -->
+    <header>
+      <div class="hdr-logo">RBA Studio Pro</div>
+      <div class="hdr-project" id="proj-name" ondblclick="renameProject()">Untitled Flow ✏️</div>
+      <div class="hdr-spacer"></div>
+      <div class="rec-badge" id="rec-badge"><div class="rec-dot"></div>REC</div>
+      <div class="hdr-badge offline" id="bot-status"><div class="hdr-dot"></div>OFFLINE</div>
+      <button class="hdr-btn primary" id="run-flow-btn" onclick="runWorkflow()">▶ RUN</button>
+      <button class="hdr-btn danger"  id="stop-flow-btn" onclick="stopWorkflow()" disabled>■ STOP</button>
+      <button class="hdr-btn" onclick="saveCurrentProject()">💾 Save</button>
+    </header>
+
+    <!-- DASHBOARD VIEW -->
+    <div class="view active" id="dashboard">
+      <div class="dash-view">
+        <div class="dash-title">🏠 Dashboard</div>
+        <div class="dash-sub">Kelola & jalankan workflow automasi Anda</div>
+        <div class="dash-grid">
+          <div class="dash-card" onclick="createNew(); switchView('editor')">
+            <div class="dash-card-ico">➕</div>
+            <div class="dash-card-ttl">New Workflow</div>
+            <div class="dash-card-sub">Buat flow baru dari awal</div>
+          </div>
+          <div class="dash-card" onclick="document.getElementById('fileInput').click()">
+            <div class="dash-card-ico">📂</div>
+            <div class="dash-card-ttl">Import JSON</div>
+            <div class="dash-card-sub">Muat workflow dari file</div>
+          </div>
+          <div class="dash-card" onclick="refreshDevices()">
+            <div class="dash-card-ico">📱</div>
+            <div class="dash-card-ttl">Scan Devices</div>
+            <div class="dash-card-sub">Deteksi perangkat ADB</div>
+          </div>
+          <div class="dash-card" onclick="switchView('recorder')">
+            <div class="dash-card-ico">🎬</div>
+            <div class="dash-card-ttl">Macro Recorder</div>
+            <div class="dash-card-sub">Rekam klik menjadi workflow</div>
+          </div>
+        </div>
+        <div class="dash-summary">
+          <div class="dash-card">
+            <div class="dash-card-ico">📁</div>
+            <div class="dash-card-ttl">Workflows</div>
+            <div class="dash-card-sub"><span id="stat-total-wf">0</span> tersimpan</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-ico">▶️</div>
+            <div class="dash-card-ttl">Runs</div>
+            <div class="dash-card-sub"><span id="stat-total-runs">0</span> eksekusi</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-ico">✅</div>
+            <div class="dash-card-ttl">Success Rate</div>
+            <div class="dash-card-sub"><span id="stat-success-rate">0%</span></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-ico">📱</div>
+            <div class="dash-card-ttl">ADB Devices</div>
+            <div class="dash-card-sub"><span id="stat-devices">0</span></div>
+          </div>
+        </div>
+        <div class="wf-list-wrap">
+          <div class="wf-list-hdr">
+            <span>📋 Saved Workflows</span>
+            <button class="hdr-btn" onclick="loadSavedProjects()">🔄 Refresh</button>
+          </div>
+          <div id="wf-list" style="padding:8px;color:var(--dim);font-size:12px;text-align:center;">Memuat...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDITOR VIEW -->
+    <div class="view" id="editor">
+      <div class="editor-shell">
+
+        <!-- LEFT: Tool Panel -->
+        <div class="left-panel">
+          <div class="panel-hdr">🧩 Activities</div>
+          <div class="search-bar"><input type="text" placeholder="Cari activity..." oninput="filterTools(this.value)" id="tool-search"></div>
+          <div class="panel-body" id="tool-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- CENTER: Canvas + Toolbar + Log -->
+        <div class="canvas-zone">
+          <div class="toolbar" id="toolbar">
+            <button class="tb-btn" onclick="createNew()" title="New (Ctrl+N)">+ New</button>
+            <button class="tb-btn" onclick="document.getElementById('fileInput').click()" title="Open (Ctrl+O)">📂 Open</button>
+            <button class="tb-btn" onclick="saveCurrentProject()" title="Save (Ctrl+S)">💾 Save</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="undoAction()" title="Undo (Ctrl+Z)">↩ Undo</button>
+            <button class="tb-btn" onclick="redoAction()" title="Redo (Ctrl+Y)">↪ Redo</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="selectAll()" title="Select All (Ctrl+A)">⬛ All</button>
+            <button class="tb-btn" onclick="copySelected()" title="Copy (Ctrl+C)">📋 Copy</button>
+            <button class="tb-btn" onclick="pasteNodes()" title="Paste (Ctrl+V)">📌 Paste</button>
+            <button class="tb-btn" onclick="deleteSelected()" title="Delete (Del)">🗑 Delete</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="autoLayout()" title="Auto Arrange">⚡ Arrange</button>
+            <button class="tb-btn" onclick="alignNodes('left')" title="Align Left">⬛ Align L</button>
+            <button class="tb-btn" onclick="alignNodes('center')" title="Align Center">⬜ Center</button>
+            <button class="tb-btn" onclick="alignNodes('right')" title="Align Right">▪ Align R</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="zoomIn()"   title="Zoom In (Ctrl+=)">🔍+</button>
+            <button class="tb-btn" onclick="zoomOut()"  title="Zoom Out (Ctrl+-)">🔍-</button>
+            <button class="tb-btn" onclick="resetZoom()" title="Fit (Ctrl+0)">⊡ Fit</button>
+            <button class="tb-btn" id="snap-btn" onclick="toggleSnap()" title="Snap to Grid">📐 Snap</button>
+            <button class="tb-btn" id="mm-btn" onclick="toggleMiniMap()" title="Mini Map">🗺 Map</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="exportWorkflow()" title="Export JSON">📤 Export</button>
+            <button class="tb-btn tb-run" onclick="runWorkflow()" id="tb-run-btn">▶ Run</button>
+          </div>
+
+          <div class="canvas-area" id="canvas">
+            <div id="canvas-wrapper">
+              <svg id="svg-layer">
+                <defs>
+                  <marker id="arr-default" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L7,3 L0,6 Z" fill="#64748b"/>
+                  </marker>
+                  <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L7,3 L0,6 Z" fill="#3b82f6"/>
+                  </marker>
+                  <marker id="arr-green" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L7,3 L0,6 Z" fill="#10b981"/>
+                  </marker>
+                  <marker id="arr-orange" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L7,3 L0,6 Z" fill="#f97316"/>
+                  </marker>
+                  <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L7,3 L0,6 Z" fill="#a855f7"/>
+                  </marker>
+                  <marker id="arr-yellow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L7,3 L0,6 Z" fill="#eab308"/>
+                  </marker>
+                  <filter id="glow-blue"><feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                </defs>
+                <path id="temp-line" d="" style="display:none;"/>
+              </svg>
+            </div>
+            <div class="zoom-badge" id="zoom-badge">100%</div>
+            <div id="minimap">
+              <canvas id="mm-canvas" width="180" height="130"></canvas>
+            </div>
+          </div>
+
+          <!-- LOG STRIP -->
+          <div class="log-strip" id="log-strip">
+            <div class="log-hdr" onclick="toggleLog()">
+              <div class="log-hdr-title">
+                <span>📋</span> EXECUTION LOG
+                <div class="rec-badge" id="rec-badge2" style="display:none;">
+                  <div class="rec-dot"></div>RECORDING
+                </div>
+              </div>
+              <div class="log-hdr-actions">
+                <button class="hdr-btn" onclick="event.stopPropagation();clearLog()" style="font-size:10px;padding:3px 8px;">Clear</button>
+                <button class="hdr-btn" onclick="event.stopPropagation();toggleLog()" style="font-size:10px;padding:3px 8px;" id="log-toggle-btn">▼</button>
+              </div>
+            </div>
+            <div class="log-body" id="log-body">
+              <div class="log-output" id="log-output"></div>
+              <div class="log-stats">
+                <div style="font-size:10px;font-weight:700;color:var(--dim);letter-spacing:.1em;margin-bottom:10px;">BOT STATS</div>
+                <div class="stat-item"><span>Steps Run</span><span class="stat-val" id="st-steps">0</span></div>
+                <div class="stat-item"><span>Errors</span><span class="stat-val" id="st-errors">0</span></div>
+                <div class="stat-item"><span>Retries</span><span class="stat-val" id="st-retries">0</span></div>
+                <div class="stat-item"><span>Runtime</span><span class="stat-val" id="st-runtime">0:00</span></div>
+                <div class="stat-item"><span>ADB Cmds</span><span class="stat-val" id="st-adb">0</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Properties Panel -->
+        <div class="right-panel">
+          <div class="panel-hdr">⚙️ Properties</div>
+          <div class="panel-body" id="prop-panel">
+            <div class="prop-empty" id="prop-empty">
+              Klik node untuk edit properties<br><br>
+              💡 Drag activity dari kiri ke canvas<br>
+              🔗 Drag port biru untuk hubungkan node
+            </div>
+            <div id="prop-editor" style="display:none;">
+              <div class="prop-title">
+                <div class="prop-ico-big" id="pe-ico-big">📌</div>
+                <div>
+                  <div id="pe-type-lbl" style="font-size:10px;color:var(--dim2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;"></div>
+                  <input class="prop-input" id="pe-name" placeholder="Node name" oninput="saveProp('name',this.value)" style="font-weight:700;padding:4px 8px;">
+                </div>
+              </div>
+              <div class="prop-sep"></div>
+
+              <!-- General -->
+              <div class="prop-group" id="pg-general">
+                <label class="prop-label">Delay Before (ms)</label>
+                <input class="prop-input" type="number" id="pe-delay" value="500" oninput="saveProp('delay',+this.value)">
+                <label class="prop-label" style="margin-top:8px;">Output Variable</label>
+                <input class="prop-input" id="pe-var" placeholder="e.g. result_text" oninput="saveProp('var',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Comment / Notes</label>
+                <textarea class="prop-input" id="pe-comment" rows="2" placeholder="Optional note..." oninput="saveProp('comment',this.value)" style="resize:vertical;"></textarea>
+              </div>
+
+              <!-- TAP / CLICK -->
+              <div class="prop-group" id="pg-tap" style="display:none;">
+                <label class="prop-label">Selector / XPath</label>
+                <input class="prop-input" id="pe-selector" placeholder="e.g. #btn-login or //button" oninput="saveProp('selector',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Koordinat X</label>
+                <input class="prop-input" type="number" id="pe-cx" placeholder="0" oninput="saveProp('cx',+this.value)">
+                <label class="prop-label" style="margin-top:8px;">Koordinat Y</label>
+                <input class="prop-input" type="number" id="pe-cy" placeholder="0" oninput="saveProp('cy',+this.value)">
+                <label class="prop-label" style="margin-top:8px;">Click Type</label>
+                <select class="prop-input prop-select" id="pe-click-type" onchange="saveProp('clickType',this.value)">
+                  <option value="single">Single Click</option>
+                  <option value="double">Double Click</option>
+                  <option value="right">Right Click</option>
+                  <option value="middle">Middle Click</option>
+                </select>
+              </div>
+
+              <!-- TYPE-INTO -->
+              <div class="prop-group" id="pg-type" style="display:none;">
+                <label class="prop-label">Selector / Field ID</label>
+                <input class="prop-input" id="pe-type-selector" placeholder="e.g. #username" oninput="saveProp('selector',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Text to Type</label>
+                <textarea class="prop-input" id="pe-text" rows="3" placeholder="Text atau {variable}" oninput="saveProp('text',this.value)"></textarea>
+                <label class="prop-label" style="margin-top:8px;">Clear Before Type</label>
+                <select class="prop-input prop-select" id="pe-clear" onchange="saveProp('clearBefore',this.value)">
+                  <option value="yes">Yes — clear field first</option>
+                  <option value="no">No — append text</option>
+                </select>
+                <label class="prop-label" style="margin-top:8px;">Typing Speed (ms/char)</label>
+                <input class="prop-input" type="number" id="pe-typespeed" value="30" oninput="saveProp('typeSpeed',+this.value)">
+              </div>
+
+              <!-- OPEN BROWSER -->
+              <div class="prop-group" id="pg-browser" style="display:none;">
+                <label class="prop-label">URL</label>
+                <input class="prop-input" id="pe-url" placeholder="https://..." oninput="saveProp('url',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Browser</label>
+                <select class="prop-input prop-select" id="pe-browser" onchange="saveProp('browser',this.value)">
+                  <option value="default">Default</option>
+                  <option value="chrome">Chrome</option>
+                  <option value="firefox">Firefox</option>
+                  <option value="edge">Edge</option>
+                </select>
+                <label class="prop-label" style="margin-top:8px;">Mode</label>
+                <select class="prop-input prop-select" id="pe-bmode" onchange="saveProp('browserMode',this.value)">
+                  <option value="normal">Normal</option>
+                  <option value="headless">Headless</option>
+                  <option value="incognito">Incognito</option>
+                </select>
+                <label class="prop-label" style="margin-top:8px;">Wait After Load (ms)</label>
+                <input class="prop-input" type="number" id="pe-bwait" value="2000" oninput="saveProp('waitAfterLoad',+this.value)">
+              </div>
+
+              <!-- SWIPE -->
+              <div class="prop-group" id="pg-swipe" style="display:none;">
+                <label class="prop-label">Direction</label>
+                <select class="prop-input prop-select" id="pe-dir" onchange="saveProp('dir',this.value)">
+                  <option value="up">Scroll Up</option>
+                  <option value="down">Scroll Down</option>
+                  <option value="left">Swipe Left</option>
+                  <option value="right">Swipe Right</option>
+                </select>
+                <label class="prop-label" style="margin-top:8px;">Duration (ms)</label>
+                <input class="prop-input" type="number" id="pe-dur" value="300" oninput="saveProp('dur',+this.value)">
+                <div class="prop-row2" style="margin-top:8px;">
+                  <div>
+                    <label class="prop-label">Start X</label>
+                    <input class="prop-input" type="number" id="pe-sx" oninput="saveProp('sx',+this.value)">
+                  </div>
+                  <div>
+                    <label class="prop-label">Start Y</label>
+                    <input class="prop-input" type="number" id="pe-sy" oninput="saveProp('sy',+this.value)">
+                  </div>
+                </div>
+                <div class="prop-row2" style="margin-top:8px;">
+                  <div>
+                    <label class="prop-label">End X</label>
+                    <input class="prop-input" type="number" id="pe-ex" oninput="saveProp('ex',+this.value)">
+                  </div>
+                  <div>
+                    <label class="prop-label">End Y</label>
+                    <input class="prop-input" type="number" id="pe-ey" oninput="saveProp('ey',+this.value)">
+                  </div>
+                </div>
+              </div>
+
+              <!-- MOBILE -->
+              <div class="prop-group" id="pg-mobile" style="display:none;">
+                <label class="prop-label">Device ID (kosong = perangkat aktif)</label>
+                <input class="prop-input" id="pe-device-id" placeholder="emulator-5554" oninput="saveProp('deviceId',this.value)">
+                <div class="prop-row2" style="margin-top:8px;">
+                  <div>
+                    <label class="prop-label">X</label>
+                    <input class="prop-input" type="number" id="pe-mx" oninput="saveProp('mx',+this.value)">
+                  </div>
+                  <div>
+                    <label class="prop-label">Y</label>
+                    <input class="prop-input" type="number" id="pe-my" oninput="saveProp('my',+this.value)">
+                  </div>
+                </div>
+                <label class="prop-label" style="margin-top:8px;">Key Code (press-key)</label>
+                <input class="prop-input" id="pe-keycode" placeholder="e.g. 3 (Home), 4 (Back)" oninput="saveProp('keyCode',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Screenshot Path</label>
+                <input class="prop-input" id="pe-screenshot-path" placeholder="/sdcard/screen.png" oninput="saveProp('screenshotPath',this.value)">
+              </div>
+
+              <!-- EXTRACT TEXT -->
+              <div class="prop-group" id="pg-extract" style="display:none;">
+                <label class="prop-label">CSS Selector / XPath</label>
+                <input class="prop-input" id="pe-ext-sel" placeholder="e.g. .price or //span[@class='price']" oninput="saveProp('selector',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Attribute (kosong = innerText)</label>
+                <input class="prop-input" id="pe-ext-attr" placeholder="e.g. href, value, data-id" oninput="saveProp('attribute',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Regex Filter</label>
+                <input class="prop-input" id="pe-ext-regex" placeholder="e.g. \\d+" oninput="saveProp('regex',this.value)">
+              </div>
+
+              <!-- IF CONDITION -->
+              <div class="prop-group" id="pg-condition" style="display:none;">
+                <label class="prop-label">Condition Expression</label>
+                <input class="prop-input" id="pe-cond" placeholder="e.g. {price} > 100" oninput="saveProp('condition',this.value)">
+                <label class="prop-label" style="margin-top:8px;">True → Step</label>
+                <input class="prop-input" id="pe-true-step" placeholder="Node ID atau nama" oninput="saveProp('trueStep',this.value)">
+                <label class="prop-label" style="margin-top:8px;">False → Step</label>
+                <input class="prop-input" id="pe-false-step" placeholder="Node ID atau nama" oninput="saveProp('falseStep',this.value)">
+              </div>
+
+              <!-- REPEAT / LOOP -->
+              <div class="prop-group" id="pg-loop" style="display:none;">
+                <label class="prop-label">Repeat Count</label>
+                <input class="prop-input" type="number" id="pe-loop-count" value="3" min="1" oninput="saveProp('loopCount',+this.value)">
+                <label class="prop-label" style="margin-top:8px;">Loop Variable Name</label>
+                <input class="prop-input" id="pe-loop-var" placeholder="i" oninput="saveProp('loopVar',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Break Condition</label>
+                <input class="prop-input" id="pe-loop-break" placeholder="e.g. {i} >= 5" oninput="saveProp('breakCondition',this.value)">
+              </div>
+
+              <!-- API REQUEST -->
+              <div class="prop-group" id="pg-api" style="display:none;">
+                <label class="prop-label">URL</label>
+                <input class="prop-input" id="pe-api-url" placeholder="https://api.example.com/endpoint" oninput="saveProp('apiUrl',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Method</label>
+                <select class="prop-input prop-select" id="pe-api-method" onchange="saveProp('apiMethod',this.value)">
+                  <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+                </select>
+                <label class="prop-label" style="margin-top:8px;">Headers (JSON)</label>
+                <textarea class="prop-input" id="pe-api-headers" rows="2" placeholder='{"Authorization":"Bearer ..."}' oninput="saveProp('apiHeaders',this.value)"></textarea>
+                <label class="prop-label" style="margin-top:8px;">Body (JSON)</label>
+                <textarea class="prop-input" id="pe-api-body" rows="3" placeholder='{"key":"value"}' oninput="saveProp('apiBody',this.value)"></textarea>
+              </div>
+
+              <!-- CRON / SCHEDULER -->
+              <div class="prop-group" id="pg-cron" style="display:none;">
+                <label class="prop-label">Cron Expression</label>
+                <input class="prop-input" id="pe-cron" placeholder="e.g. 0 9 * * 1-5" oninput="saveProp('cron',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Timezone</label>
+                <input class="prop-input" id="pe-tz" placeholder="Asia/Jakarta" oninput="saveProp('timezone',this.value)">
+              </div>
+
+              <!-- READ/WRITE FILE -->
+              <div class="prop-group" id="pg-file" style="display:none;">
+                <label class="prop-label">File Path</label>
+                <input class="prop-input" id="pe-filepath" placeholder="C:/data/file.csv" oninput="saveProp('filePath',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Delimiter (CSV)</label>
+                <input class="prop-input" id="pe-delim" value="," oninput="saveProp('delimiter',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Encoding</label>
+                <select class="prop-input prop-select" id="pe-encoding" onchange="saveProp('encoding',this.value)">
+                  <option>UTF-8</option><option>ISO-8859-1</option><option>ASCII</option>
+                </select>
+                <label class="prop-label" style="margin-top:8px;">Skip Header Row</label>
+                <select class="prop-input prop-select" id="pe-skip-hdr" onchange="saveProp('skipHeader',this.value)">
+                  <option value="yes">Yes</option><option value="no">No</option>
+                </select>
+              </div>
+
+              <!-- OCR -->
+              <div class="prop-group" id="pg-ocr" style="display:none;">
+                <label class="prop-label">Source (url / selector / screenshot)</label>
+                <input class="prop-input" id="pe-ocr-src" placeholder="screenshot or https://..." oninput="saveProp('ocrSource',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Language</label>
+                <input class="prop-input" id="pe-ocr-lang" value="eng" placeholder="eng, ind..." oninput="saveProp('ocrLang',this.value)">
+              </div>
+
+              <!-- WAIT ELEMENT -->
+              <div class="prop-group" id="pg-wait" style="display:none;">
+                <label class="prop-label">Selector to Wait For</label>
+                <input class="prop-input" id="pe-wait-sel" placeholder=".loading-spinner" oninput="saveProp('waitSelector',this.value)">
+                <label class="prop-label" style="margin-top:8px;">Wait Condition</label>
+                <select class="prop-input prop-select" id="pe-wait-cond" onchange="saveProp('waitCondition',this.value)">
+                  <option value="visible">Visible</option>
+                  <option value="hidden">Hidden / Disappear</option>
+                  <option value="clickable">Clickable</option>
+                  <option value="present">Present in DOM</option>
+                </select>
+                <label class="prop-label" style="margin-top:8px;">Timeout (ms)</label>
+                <input class="prop-input" type="number" id="pe-wait-timeout" value="10000" oninput="saveProp('waitTimeout',+this.value)">
+              </div>
+
+              <div class="prop-sep"></div>
+
+          <div class="prop-group" id="var-panel">
+            <div class="prop-title" style="justify-content:space-between;">
+              <span>📦 Variables</span>
+              <span id="var-count" style="font-size:11px;color:var(--dim);">(0)</span>
+            </div>
+            <div id="var-inspector" style="min-height:90px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--dim);font-size:11px;overflow-y:auto;"></div>
+          </div>
+
+              <!-- Quick Actions -->
+              <button class="btn-full btn-run-step" onclick="runSingleStep()">▶ Run This Step</button>
+              <button class="btn-full btn-draw-conn" onclick="startConnectionDraw()">🔗 Draw Connection</button>
+              <button class="btn-full btn-dup" onclick="duplicateSelected()">📋 Duplicate Node</button>
+              <button class="btn-full btn-delete" onclick="deleteSelected()">🗑️ Delete Node</button>
+            </div>
+          </div>
+
+          <!-- Device Section -->
+          <div class="dev-section">
+            <div class="dev-label">Active ADB Device</div>
+            <select class="dev-select" id="device-selector">
+              <option>No ADB Device</option>
+            </select>
+            <div class="dev-actions">
+              <button class="dev-btn refresh" onclick="refreshDevices()">🔄 Refresh</button>
+              <button class="dev-btn scrcpy" onclick="launchScrcpy()">📱 scrcpy</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RECORDER VIEW -->
+    <div class="view" id="recorder">
+      <div class="dash-view">
+        <div class="dash-title">🎬 Macro Recorder</div>
+        <div class="dash-sub">Klik pada canvas untuk merekam tap. Setiap klik akan menjadi node Tap dalam workflow.</div>
+        <div style="display:flex;gap:12px;margin-bottom:20px;">
+          <button class="hdr-btn primary" id="rec-start-btn" onclick="startMacroRecord()">● Start Recording</button>
+          <button class="hdr-btn" id="rec-stop-btn" onclick="stopMacroRecord()" disabled>■ Stop</button>
+          <button class="hdr-btn" onclick="clearRecordedSteps()">🗑 Clear</button>
+          <button class="hdr-btn" onclick="saveRecordedToWorkflow()" id="rec-save-btn" disabled>💾 Save to Workflow</button>
+        </div>
+        <div id="rec-steps" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;min-height:120px;font-size:12px;color:var(--dim2);">
+          Klik 'Start Recording' lalu klik pada area yang ingin direkam...
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div class="view" id="settings">
+      <div class="settings-view">
+        <div class="dash-title" style="margin-bottom:20px;">⚙️ Pengaturan</div>
+        <div class="settings-grid">
+          <div class="setting-card">
+            <div class="setting-card-ttl">🌐 Bahasa / Language</div>
+            <label class="prop-label">Language</label>
+            <select class="prop-input prop-select" id="lang-sel" onchange="setLang(this.value)">
+              <option value="id">Bahasa Indonesia</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="setting-card">
+            <div class="setting-card-ttl">📱 ADB Configuration</div>
+            <label class="prop-label">ADB Path (kosong = auto-detect)</label>
+            <input class="prop-input" id="adb-path-input" placeholder="C:/platform-tools/adb.exe" style="margin-bottom:8px;">
+            <button class="hdr-btn" onclick="saveAdbPath()" style="width:100%;margin-bottom:6px;">Save ADB Path</button>
+            <button class="hdr-btn" onclick="showAdbInfo()" style="width:100%;">🔍 Check ADB Status</button>
+            <div id="adb-status-msg" style="font-size:11px;color:var(--dim2);margin-top:8px;"></div>
+          </div>
+          <div class="setting-card">
+            <div class="setting-card-ttl">⚙️ Editor Preferences</div>
+            <div class="toggle-row">
+              <label>Auto-save workflows</label>
+              <label class="toggle"><input type="checkbox" id="pref-autosave" onchange="savePref()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <label>Confirm on delete</label>
+              <label class="toggle"><input type="checkbox" id="pref-confirm" checked onchange="savePref()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <label>Snap to Grid (default)</label>
+              <label class="toggle"><input type="checkbox" id="pref-snap" onchange="savePref()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <label>Show step numbers</label>
+              <label class="toggle"><input type="checkbox" id="pref-stepnum" checked onchange="savePref()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <label>Animate connections</label>
+              <label class="toggle"><input type="checkbox" id="pref-animate" checked onchange="savePref()"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div class="setting-card">
+            <div class="setting-card-ttl">ℹ️ About</div>
+            <div style="font-size:12px;line-height:1.8;color:var(--dim2);">
+              <strong style="color:var(--text);">RBA Studio Pro</strong><br>
+              Version: <strong style="color:var(--text);">2.0</strong><br>
+              Developer: <strong style="color:var(--text);">Arya Septian</strong><br>
+              <a href="#" onclick="ipcRenderer.send('open-external','mailto:arya@example.com')" style="color:var(--accent);">arya@example.com</a><br><br>
+              <button class="hdr-btn" onclick="resetAllSettings()" style="width:100%;">🔄 Reset All Settings</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.shell -->
+
+<!-- Hidden file input -->
+<input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleImport(this)">
+
+<script src="renderer.js"></script>
+</body>
+</html>

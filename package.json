@@ -1,0 +1,79 @@
+{
+  "name": "rba-studio-pro",
+  "version": "1.0.0",
+  "description": "RBA Studio Pro — Workflow Automation",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --inspect",
+    "build": "electron-builder --win --x64",
+    "build:all": "electron-builder --win --mac --linux",
+    "dist": "npm run obfuscate && electron-builder --win --x64",
+    "obfuscate": "node obfuscate.js",
+    "build:secure": "node obfuscate.js && cd dist-obfuscated && npx electron-builder --win --x64"
+  },
+  "author": "Arya Septian",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.13.3",
+    "electron-packager": "^17.1.2",
+    "javascript-obfuscator": "^4.1.0"
+  },
+  "dependencies": {
+    "axios": "^1.15.2",
+    "bcryptjs": "^2.4.3"
+  },
+  "build": {
+    "appId": "com.rbastudio.pro",
+    "productName": "RBA Studio Pro",
+    "copyright": "Copyright © 2026 RBA Studio",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/bcryptjs/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "RBA Studio Pro",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "deleteAppDataOnUninstall": false
+    },
+    "files": [
+      "**/*",
+      "!**/*.map",
+      "!**/node_modules/.cache/**",
+      "!**/test/**",
+      "!**/*.md",
+      "!.git/**"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "scrcpy",
+        "to": "scrcpy",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  }
+}

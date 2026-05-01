@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — RBA Studio Pro</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    }
+    
+    .login-container {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .logo h1 {
+      color: #f1f5f9;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      background: linear-gradient(135deg, #60a5fa, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .logo p {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: #94a3b8;
+      font-size: 12px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .form-group input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #f1f5f9;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    
+    .form-group input:focus {
+      border-color: #3b82f6;
+      background: rgba(59,130,246,0.1);
+    }
+    
+    .form-group input::placeholder {
+      color: #475569;
+    }
+    
+    .login-btn {
+      width: 100%;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    
+    .login-btn:hover {
+      background: #2563eb;
+    }
+    
+    .login-btn:active {
+      transform: scale(0.98);
+    }
+    
+    .login-btn:disabled {
+      background: #475569;
+      cursor: not-allowed;
+    }
+    
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .error-msg.show {
+      display: block;
+      animation: shake 0.5s ease-in-out;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    
+    .hint {
+      text-align: center;
+      margin-top: 24px;
+      color: #475569;
+      font-size: 11px;
+    }
+    
+    .hint code {
+      background: rgba(255,255,255,0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+      <h1>⚡ RBA Studio Pro</h1>
+      <p>Workflow Automation Designer</p>
+    </div>
+    
+    <div class="error-msg" id="error-msg"></div>
+    
+    <form id="login-form">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Masukkan username" autocomplete="username" required>
+      </div>
+      
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Masukkan password" autocomplete="current-password" required>
+      </div>
+      
+      <button type="submit" class="login-btn" id="login-btn">LOGIN</button>
+    </form>
+    
+    <div class="hint">
+      Default: <code>admin</code> / <code>admin123</code>
+    </div>
+  </div>
+  
+  <script>
+    const { ipcRenderer } = require('electron');
+    
+    async function handleLogin() {
+      const { ipcRenderer } = require('electron');
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const btn      = document.getElementById('login-btn');
+      const errorEl  = document.getElementById('error-msg');
+
+      if (!username || !password) {
+        if (errorEl) errorEl.textContent = 'Username dan password wajib diisi';
+        return;
+      }
+
+      btn.disabled    = true;
+      btn.textContent = 'Memverifikasi...';
+      if (errorEl) errorEl.textContent = '';
+
+      try {
+        const result = await ipcRenderer.invoke('auth-login', {
+          username,
+          password
+        });
+
+        if (result.success) {
+          btn.textContent = 'Berhasil! Membuka aplikasi...';
+          btn.style.background = '#10b981';
+          // TIDAK perlu navigasi di sini
+          // main.js yang akan memanggil loadFile('index.html')
+          // setelah 500ms via setTimeout
+        } else {
+          btn.disabled    = false;
+          btn.textContent = 'Login';
+          if (errorEl) errorEl.textContent = result.reason || 'Login gagal';
+
+          // Animasi shake pada card
+          const card = document.querySelector('.login-card') ||
+                       document.querySelector('.card')       ||
+                       document.querySelector('form')        ||
+                       document.querySelector('.container');
+          if (card) {
+            card.style.animation = 'shake 0.4s ease';
+            setTimeout(() => card.style.animation = '', 500);
+          }
+        }
+      } catch (err) {
+        btn.disabled    = false;
+        btn.textContent = 'Login';
+        if (errorEl) errorEl.textContent = 'Koneksi ke app gagal: ' + err.message;
+      }
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('error-msg');
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+      }
+    }
+
+    document.getElementById('login-btn').addEventListener('click', handleLogin);
+  </script>
+</body>
+</html>

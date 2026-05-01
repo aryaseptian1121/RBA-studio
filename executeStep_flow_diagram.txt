@@ -1,0 +1,239 @@
+﻿/**
+ * EXECUTESTEP EXECUTION FLOW DIAGRAM
+ * ==================================
+ */
+
+OVERALL FUNCTION FLOW:
+┌─────────────────────────────────────────────────────────────┐
+│  EXECUTESTEP(step, device)                                  │
+└─────────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+        ┌──────────────────────────────────────┐
+        │ SECTION 1: INITIALIZATION             │
+        │ - Extract step.id, step.type          │
+        │ - Log entry: [EXECUTE_STEP] Starting  │
+        │ - Set status = 'running'              │
+        │ - Record startTime                    │
+        └──────────────────────────────────────┘
+                           │
+                           ▼
+        ┌──────────────────────────────────────┐
+        │ SECTION 2: INTERPOLATION              │
+        │ - Replace \ in selector        │
+        │ - Replace \ in url             │
+        │ - Replace \ in text/conditions │
+        └──────────────────────────────────────┘
+                           │
+                           ▼
+        ┌──────────────────────────────────────┐
+        │ SECTION 3: SWITCH ON step.type        │
+        │ (Router to appropriate handler)       │
+        └──────────────────────────────────────┘
+                           │
+               ┌───────────┼───────────┐
+               │           │           │
+               ▼           ▼           ▼
+         [Control]    [Web]       [Mobile]
+         delay        click       mobile-tap
+         repeat       type-into   mobile-swipe
+         start        wait        (ADB commands)
+               │           │           │
+               └───────────┼───────────┘
+                           │
+                           ▼
+        ┌──────────────────────────────────────┐
+        │ Execute Step-Specific Logic:          │
+        │ - Validate parameters                │
+        │ - Execute action                     │
+        │ - Capture result/response            │
+        │ - Store in variables if needed       │
+        │ - Apply post-action delays           │
+        └──────────────────────────────────────┘
+                           │
+                 ┌─────────┴─────────┐
+                 │ No Exception?     │
+                 └─────────┬─────────┘
+                           │
+                    ┌──────┴──────┐
+                    │             │
+                   YES            NO
+                    │             │
+                    ▼             ▼
+        ┌──────────────────┐  ┌──────────────────┐
+        │ SECTION 4:       │  │ SECTION 5:       │
+        │ SUCCESS PATH     │  │ ERROR HANDLING   │
+        │                  │  │                  │
+        │ - Set status =   │  │ - Set status =   │
+        │   'success'      │  │   'error'        │
+        │ - Record endTime │  │ - Record endTime │
+        │ - Calculate dur  │  │ - Store error    │
+        │ - Log success    │  │ - Check onError  │
+        │ - Return result  │  │ - Continue? Re-  │
+        │                  │  │   try? Or throw  │
+        └──────────────────┘  └──────────────────┘
+                    │             │
+                    └─────────┬───┘
+                              │
+                              ▼
+                ┌─────────────────────────────┐
+                │ RETURN VALUE                │
+                │                             │
+                │ if-condition: {             │
+                │   conditionResult: boolean  │
+                │ }                           │
+                │                             │
+                │ Other steps: {              │
+                │   conditionResult: null     │
+                │ }                           │
+                │                             │
+                │ On error (if throw): throw  │
+                └─────────────────────────────┘
+
+
+DETAILED SECTION 3: SWITCH ROUTER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+switch(step.type) {
+  
+  ├─ start ─────────────────────────── Initialize workflow
+  ├─ delay ─────────────────────────── Wait N milliseconds
+  │
+  ├─ open-browser ──────────────────── Launch browser at URL
+  ├─ close-browser ─────────────────── Close browser
+  │
+  ├─ click / tap ───────────────────── Click element by selector
+  ├─ type-into ─────────────────────── Type text into element
+  ├─ scroll-page ───────────────────── Scroll browser page
+  ├─ wait-element ──────────────────── Wait for element presence
+  ├─ screenshot-page ───────────────── Take screenshot
+  │
+  ├─ extract-text ──────────────────── Get element.innerText
+  ├─ extract-table ─────────────────── Parse table to JSON
+  │
+  ├─ mobile-tap ────────────────────── Tap coordinates on device
+  ├─ mobile-swipe ──────────────────── Swipe on device
+  │
+  ├─ api-request ───────────────────── Call HTTP endpoint
+  │
+  ├─ read-csv ──────────────────────── Load CSV file
+  ├─ write-csv ─────────────────────── Save to CSV file
+  │
+  ├─ if-condition ──────────────────── Evaluate condition
+  │
+  ├─ repeat-start ───────────────────── Begin loop
+  ├─ repeat-end ─────────────────────── End loop
+  │
+  ├─ retry-logic ────────────────────── Setup retry
+  │
+  └─ default ────────────────────────── Error: unknown type
+}
+
+
+VARIABLE STORAGE & RETRIEVAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Input:  variables = { username: 'john', apiKey: '12345' }
+
+During execution:
+  selector = \"\_profile\"
+    ↓ interpolate() ↓
+  selector = \"john_profile\"
+
+After extraction:
+  variables[step.variableName] = extractedValue
+    ↓
+  variables = { username: 'john', apiKey: '12345', result: 'extracted_value' }
+
+Next step can use:
+  condition = \"variables['result'] !== null\"
+    ↓ evaluateCondition() ↓
+  conditionResult = true
+
+
+ERROR HANDLING DECISION TREE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Exception thrown during step?
+│
+├─ NO → Set status='success', return
+│
+└─ YES → Check step.onError
+         │
+         ├─ 'continue' → Set status='error', return null (continue workflow)
+         │
+         ├─ 'retry' → Increment retryCount
+         │           │
+         │           ├─ Retries < max? → Retry (recursive call)
+         │           │
+         │           └─ Retries exhausted? → Throw error
+         │
+         └─ 'throw' (default) → Set status='error', throw exception
+
+
+STEP STATUS LIFECYCLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Created]
+   │
+   ├─ status = 'pending' (from caller)
+   │
+   ▼ executeStep() called
+   │
+   ├─ status = 'running'
+   │ startTime = now
+   │
+   ├─ Execute logic
+   │
+   ▼ Completion
+   │
+   ├─ Success path:
+   │  ├─ status = 'success'
+   │  ├─ endTime = now
+   │  ├─ duration = elapsed
+   │  └─ return
+   │
+   └─ Error path:
+      ├─ status = 'error'
+      ├─ endTime = now
+      ├─ duration = elapsed
+      ├─ errorMessage = error.message
+      ├─ errorStack = error.stack
+      └─ throw or return (based on onError)
+
+
+LOGGING STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Entry:    [EXECUTE_STEP] Starting step: step_1 (type: click)
+Detail:   [STEP_CLICK] Selector: .button-submit
+Action:   [STEP_CLICK] Element clicked successfully
+Success:  [STEP_SUCCESS] step_1 completed in 245ms
+Error:    [STEP_ERROR] Step step_1 failed: Element not found
+
+Each log includes:
+  - [PREFIX] to identify step type
+  - Interpolated values (not raw variables)
+  - Timing information (duration, timeout)
+  - Result status (success, error, etc)
+  - Action details (selector, URL, method, etc)
+
+
+KEY VARIABLES TO MAINTAIN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+In function scope (will be updated):
+  step.status ────────────── 'running' → 'success'/'error'
+  step.startTime ──────────── Date when started
+  step.endTime ────────────── Date when completed
+  step.duration ──────────── Milliseconds elapsed
+  step.errorMessage ──────── Error text if failed
+  step.errorStack ─────────── Full stack trace
+  step.retryAttempts ──────── Count of retries executed
+
+In variables object (used for interpolation):
+  variables[key] = value ── Extracted results, CSV data, API responses
+
+Return value:
+  { conditionResult: true|false|null }
+
