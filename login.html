@@ -177,17 +177,21 @@
   
   <script>
     const { ipcRenderer } = require('electron');
-    
-    async function handleLogin() {
-      const { ipcRenderer } = require('electron');
+    const form      = document.getElementById('login-form');
+    const btn       = document.getElementById('login-btn');
+    const errorEl   = document.getElementById('error-msg');
+
+    async function handleLogin(event) {
+      if (event && event.preventDefault) event.preventDefault();
 
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
-      const btn      = document.getElementById('login-btn');
-      const errorEl  = document.getElementById('error-msg');
 
       if (!username || !password) {
-        if (errorEl) errorEl.textContent = 'Username dan password wajib diisi';
+        if (errorEl) {
+          errorEl.textContent = 'Username dan password wajib diisi';
+          errorEl.classList.add('show');
+        }
         return;
       }
 
@@ -225,19 +229,22 @@
       } catch (err) {
         btn.disabled    = false;
         btn.textContent = 'Login';
-        if (errorEl) errorEl.textContent = 'Koneksi ke app gagal: ' + err.message;
+        if (errorEl) {
+          errorEl.textContent = 'Koneksi ke app gagal: ' + err.message;
+          errorEl.classList.add('show');
+        }
       }
     }
 
     function showError(message) {
-      const errorEl = document.getElementById('error-msg');
       if (errorEl) {
         errorEl.textContent = message;
         errorEl.classList.add('show');
       }
     }
 
-    document.getElementById('login-btn').addEventListener('click', handleLogin);
+    form.addEventListener('submit', handleLogin);
+    btn.addEventListener('click', handleLogin);
   </script>
 </body>
 </html>

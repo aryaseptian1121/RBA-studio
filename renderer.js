@@ -25,6 +25,7 @@ let clipboard = [];
 // Execution state
 let stopRequested = false;
 let execStats = { steps:0, errors:0, retries:0, adb:0, startTime:0, interval:null };
+let isFlowRunning = false;  // BUG #1 FIX: Track flow execution state
 
 // Feature: Variables & Interpolation
 let varStore = {};  // { varName: value }
@@ -119,14 +120,40 @@ const ACTIVITIES = [
 // ═══════════════════════════════════════════════════════════════
 
 // ─── Variable Interpolation & Storage ───────────────────────
+// BUG #2 FIX: Support both {{variableName}} and {variableName} syntax
 function interpolate(str) {
   if (!str) return str;
-  return String(str).replace(/\{(\w+)\}/g, (_, key) => (varStore[key] !== undefined ? varStore[key] : '{' + key + '}'));
+  const strVal = String(str);
+  
+  // First, resolve {{variableName}} (double braces - user expected format)
+  let result = strVal.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+    const value = varStore[key];
+    return value !== undefined ? value : '{{' + key + '}}';
+  });
+  
+  // Then, resolve {variableName} (single braces - legacy format)
+  result = result.replace(/\{(\w+)\}/g, (_, key) => {
+    const value = varStore[key];
+    return value !== undefined ? value : '{' + key + '}';
+  });
+  
+  return result;
+}
+
+// DEBUG: Log variable resolution
+function resolveWithLog(label, str) {
+  if (!str) return str;
+  const result = interpolate(str);
+  if (result !== str) {
+    console.log('[VAR RESOLVE] ' + label + ': "' + str + '" → "' + result + '"');
+  }
+  return result;
 }
 
 function storeVar(key, value) {
   if (!key) return;
   varStore[key] = value;
+  console.log('[VAR STORE] ' + key + ' = ' + String(value).substring(0, 50));
   updateVarPanel();
 }
 
@@ -138,6 +165,8 @@ function updateVarPanel() {
     el.innerHTML = '<div style="color:var(--dim);font-size:11px;padding:10px;text-align:center;">No variables yet</div>';
     return;
   }
+  // BUG #2 FIX: Show live updates with proper formatting
+  console.log('[VAR PANEL] Updating with ' + entries.length + ' variables:', Object.keys(varStore));
   el.innerHTML = entries.map(([k,v]) =>
     '<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:6px 0;border-bottom:1px solid var(--border2);">' +
       '<span style="color:#93c5fd;font-weight:600;">{' + k + '}</span>' +
@@ -491,6 +520,65 @@ function selectNode(idx) {
   if (idx === null || idx < 0 || idx >= project.steps.length) { showPropEmpty(); return; }
   showProp(project.steps[idx]);
 }
+
+// ═══════════════════════════════════════════════════════════════
+// FIX: Properties Panel - Reset & Re-initialize
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Reset Properties Panel state - dipanggil setiap kali node baru dipilih.
+ * Memastikan semua input field editable dan event listeners ter-attach.
+ */
+function resetPanelState() {
+  console.log('[PROP PANEL] Reset panel state...');
+  
+  // List semua input field yang harus di-reset
+  const inputIds = [
+    'pe-name', 'pe-delay', 'pe-var', 'pe-comment',
+    'pe-cx', 'pe-cy', 'pe-selector', 'pe-click-type',
+    'pe-type-selector', 'pe-text', 'pe-clear', 'pe-typespeed',
+    'pe-url', 'pe-browser', 'pe-bmode', 'pe-bwait',
+    'pe-dir', 'pe-dur', 'pe-sx', 'pe-sy', 'pe-ex', 'pe-ey',
+    'pe-mx', 'pe-my', 'pe-device-id', 'pe-keycode', 'pe-screenshot-path',
+    'pe-ext-sel', 'pe-ext-attr', 'pe-ext-regex',
+    'pe-cond', 'pe-true-step', 'pe-false-step',
+    'pe-loop-count', 'pe-loop-var', 'pe-loop-break',
+    'pe-api-url', 'pe-api-method', 'pe-api-headers', 'pe-api-body',
+    'pe-cron', 'pe-tz',
+    'pe-filepath', 'pe-delim', 'pe-encoding',
+    'pe-ocr-src', 'pe-ocr-lang',
+    'pe-wait-sel', 'pe-wait-cond', 'pe-wait-timeout'
+  ];
+  
+  // Reset setiap input field - TIDAK menggunakan cloneNode (menyebabkan bug)
+  inputIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      // Hapus atribut readonly/disabled jika ada
+      el.removeAttribute('readonly');
+      el.removeAttribute('disabled');
+      el.removeAttribute('aria-disabled');
+      
+      // Pastikan pointer events aktif
+      el.style.pointerEvents = 'auto';
+      el.style.cursor = 'text';
+      el.style.opacity = '1';
+      
+      // JANGAN clone element - itu menghapus event listeners!
+      // Cukup reset style dan attributes saja
+    }
+  });
+  
+  // Force focus removal dari field sebelumnya
+  if (document.activeElement && 
+      (document.activeElement.tagName === 'INPUT' || 
+       document.activeElement.tagName === 'TEXTAREA')) {
+    document.activeElement.blur();
+  }
+  
+  console.log('[PROP PANEL] ✓ Panel state reset complete');
+}
+
 function showPropEmpty() {
   selectedIdx = null; multiSelect = [];
   document.getElementById('prop-empty').style.display = 'block';
@@ -518,6 +606,10 @@ const PROP_GROUPS = {
 };
 
 function showProp(s) {
+  // FIX: Reset panel state sebelum populate data
+  // Ini memastikan field editable dan event listeners fresh
+  resetPanelState();
+  
   document.getElementById('prop-empty').style.display = 'none';
   document.getElementById('prop-editor').style.display = 'block';
   const def = getActivityDef(s.type);
@@ -614,9 +706,26 @@ function saveProp(key, val) {
     newValue: val
   });
   
+  // FIX #2: Support both 'var' and 'outputVariable' keys
+  // Ini memastikan backward compatibility dengan flow lama
+  if (key === 'var') {
+    s.outputVariable = val;  // Sync ke outputVariable
+    console.log('[PROP DEBUG] var → outputVariable: "' + val + '"');
+  } else if (key === 'outputVariable') {
+    s.var = val;  // Sync ke var
+    console.log('[PROP DEBUG] outputVariable → var: "' + val + '"');
+  }
+  
   // Re-render to reflect changes
   if (key === 'name' || key === 'type') {
     render();
+  }
+  
+  // FIX: Force update UI untuk field yang bermasalah
+  // Pastikan nilai benar-benar tersimpan ke step object
+  if (key === 'var' || key === 'outputVariable' || key === 'comment' || key === 'deviceId' || key === 'keyCode') {
+    console.log('[PROP DEBUG] ' + key + ' = "' + val + '"');
+    console.log('[PROP DEBUG] Node data:', JSON.stringify(s));
   }
 }
 
@@ -883,6 +992,11 @@ function applyTransform() {
 }
 
 canvasEl.addEventListener('mousedown', e => {
+  // BUG #1 FIX: Do NOT capture events from the properties panel
+  if (e.target.closest('.prop-panel') || e.target.closest('#prop-editor') || e.target.closest('#properties-panel')) {
+    return;
+  }
+  
   if (e.target === canvasEl || e.target === wrapperEl || e.target.id === 'svg-layer') {
     if (e.button === 1 || e.button === 2 || (e.button===0 && !e.altKey)) {
       if (e.button === 0) {
@@ -1951,25 +2065,63 @@ async function runWorkflow() {
 
         case 'mobile-screenshot': {
           if (!stepDevice) throw new Error('Tidak ada device ADB');
-          const devPath = '/sdcard/rba_sc_'+Date.now()+'.png';
-          // Path AMAN: hindari OneDrive, Documents, path dengan spasi
+          
+          // DEBUG: Log sebelum screenshot
+          console.log('[EXEC] Step '+(i+1)+': mobile-screenshot');
+          console.log('[EXEC] Node config:', JSON.stringify(s));
+          
+          // Import screenshot utility
+          const { takeScreenshot, getTimestamp } = require('./adb-screenshot');
+          
+          // Generate filename with timestamp
+          const timestamp = getTimestamp();
+          const filename = `screenshot_${timestamp}.png`;
+          
+          // Determine local save path
           const safeDir = 'C:\\rba_output';
           const fs2 = require('fs');
           const path2 = require('path');
           try { if (!fs2.existsSync(safeDir)) fs2.mkdirSync(safeDir, {recursive:true}); } catch(e) {}
           const localPath = fs2.existsSync(safeDir)
-            ? path2.join(safeDir, 'screenshot_'+Date.now()+'.png')
-            : path2.join(require('os').tmpdir(), 'screenshot_'+Date.now()+'.png');
+            ? path2.join(safeDir, filename)
+            : path2.join(require('os').tmpdir(), filename);
+          
           addLog('Step '+(i+1)+': 📸 Screenshot → '+localPath, 'info');
-          const r1 = await runAdb(stepDevice, 'shell screencap -p '+devPath);
-          if (!r1.success) throw new Error('screencap gagal: '+r1.error);
-          await wait(500);
-          const pullPath = localPath.replace(/\\/g, '/');
-          const r2 = await runAdb(stepDevice, 'pull '+devPath+' "'+pullPath+'"');
-          if (!r2.success) throw new Error('pull gagal: '+r2.error);
-          await runAdb(stepDevice, 'shell rm '+devPath);
-          if (s.var) storeVar(s.var, localPath);
-          addLog('  ✓ Tersimpan: '+localPath, 'success');
+          
+          // BUG #3 FIX: Use takeScreenshot with full JPG + Gallery support
+          const result = await takeScreenshot(stepDevice, localPath, {
+            deviceFolder: '/sdcard/DCIM/Screenshots/',
+            prefix: 'screen',
+            deleteDeviceFile: false,
+            convertToJpg: true
+          });
+          
+          console.log('[SCREENSHOT] Result:', result);
+          console.log('[SCREENSHOT] Format:', result.format || 'png');
+          
+          if (!result.success) {
+            throw new Error('Screenshot gagal: ' + result.error);
+          }
+          
+          // Result.localPath already contains JPG path (if conversion succeeded)
+          const outputPath = result.localPath;
+          
+          // Log results
+          addLog('  ✓ Laptop: '+outputPath, 'success');
+          addLog('  ✓ Device: '+result.devicePath, 'success');
+          addLog('  ✓ Format: '+(result.format||'png'), 'info');
+          addLog('  ✓ Media Scanner triggered', 'success');
+          
+          // BUG #2 FIX: Support both 'var' and 'outputVariable'
+          const varName = s.var || s.outputVariable;
+          if (varName) {
+            storeVar(varName, outputPath);
+            console.log('[VAR] ' + varName + ' = ' + outputPath);
+            addLog('  [VAR] {' + varName + '} = ' + outputPath.substring(0, 50) + '...', 'info');
+          } else {
+            console.log('[VAR] No output variable specified');
+          }
+          
           break;
         }
 
@@ -1990,8 +2142,11 @@ async function runWorkflow() {
         case 'read-ui-element':
         case 'mobile-find-text': {
           if (!stepDevice) throw new Error('Tidak ada device ADB');
-          const searchTxt = interpolate(s.selector||s.text||'');
+          
+          // BUG #2 FIX: Resolve variables with logging
+          const searchTxt = resolveWithLog('searchText', s.selector||s.text||'');
           if (!searchTxt) throw new Error('Teks untuk dicari kosong');
+          
           const xmlPath = require('path').join(require('os').tmpdir(), 'ui_dump_'+Date.now()+'.xml');
           addLog('Step '+(i+1)+': 🔎 Cari "'+searchTxt+'"...', 'info');
           const r1 = await runAdb(stepDevice, 'shell uiautomator dump /sdcard/ui_rba.xml');
@@ -2072,16 +2227,97 @@ async function runWorkflow() {
         }
 
         case 'ocr': {
-          if(stepDevice){
-            const r=await runAdb(stepDevice,'shell uiautomator dump /sdcard/ocr.xml && cat /sdcard/ocr.xml');
-            if(r.success){
-              const texts=[];const rx2=/text="([^"]+)"/g;let m2;
-              while((m2=rx2.exec(r.output))!==null&&texts.length<20)texts.push(m2[1]);
-              if(s.var)storeVar(s.var,texts.join(' | '));
-              addLog('Step '+(i+1)+': ✓ OCR: '+texts.slice(0,3).join(', '),'success');
-              await runAdb(stepDevice,'shell rm /sdcard/ocr.xml');
+          // BUG #4 FIX: Validate both required fields
+          console.log('[OCR] Step '+(i+1)+': ocr');
+          console.log('[OCR] Node config:', JSON.stringify(s));
+          
+          // BUG #4: Support searchText field (what text to search for)
+          const searchText = resolveWithLog('searchText', s.text || s.selector || '');
+          
+          // Support both 'var' and 'outputVariable'
+          const varName = s.var || s.outputVariable;
+          const imagePath = varName ? varStore[varName] : null;
+          
+          console.log('[OCR] varName:', varName, 'imagePath:', imagePath, 'searchText:', searchText);
+          
+          // BUG #4: Validate screenshot path from variable
+          const hasImagePath = imagePath && fs.existsSync(imagePath);
+
+          if (hasImagePath) {
+            console.log('[OCR] Using image from variable:', imagePath);
+
+            const { convertPngToJpg } = require('./image-convert');
+            const ext = path.extname(imagePath).toLowerCase();
+
+            let ocrImagePath = imagePath;
+            if (ext === '.png') {
+              const jpgPath = imagePath.replace(/\.png$/i, '.jpg');
+              const convResult = await convertPngToJpg(imagePath, jpgPath);
+              if (convResult.success) {
+                ocrImagePath = convResult.outputPath;
+                console.log('[OCR] Converted PNG → JPG:', ocrImagePath);
+              }
             }
-          } else { addLog('Step '+(i+1)+': OCR butuh device','warn');}
+
+            try {
+              const tesseract = require('tesseract.js');
+              console.log('[OCR] Running Tesseract on:', ocrImagePath);
+
+              const { data: { text } } = await tesseract.recognize(ocrImagePath, 'eng+ind');
+              const extractedText = text.trim();
+
+              console.log('[OCR] Extracted text:', extractedText.substring(0, 100));
+
+              let ocrResult = extractedText;
+              let found = false;
+              if (searchText && searchText.trim() !== '') {
+                found = extractedText.toLowerCase().includes(searchText.toLowerCase());
+                ocrResult = found ? 'DITEMUKAN: ' + searchText : 'TIDAK DITEMUKAN';
+                console.log('[OCR] Search "' + searchText + '":', found);
+
+                if (varName) {
+                  storeVar(varName, found);
+                  storeVar(varName + '_text', extractedText);
+                }
+              } else {
+                if (varName) {
+                  storeVar(varName, extractedText);
+                }
+              }
+
+              addLog('Step '+(i+1)+': ✓ OCR: '+ocrResult.substring(0, 50)+'...', 'success');
+            } catch (ocrErr) {
+              console.log('[OCR] Tesseract error:', ocrErr.message);
+              throw new Error('OCR pada file lokal gagal: ' + ocrErr.message + '\nPastikan Tesseract.js terinstall: npm install tesseract.js');
+            }
+          } else if (stepDevice) {
+            console.log('[OCR] Using device uiautomator dump (fallback)');
+
+            if (!searchText || searchText.trim() === '') {
+              throw new Error('Teks untuk dicari kosong. Isi field "Teks yang dicari" pada node OCR.');
+            }
+
+            const r = await runAdb(stepDevice, 'shell uiautomator dump /sdcard/ocr.xml && cat /sdcard/ocr.xml');
+            if (r.success) {
+              const texts = [];
+              const rx2 = /text="([^"]+)"/g;
+              let m2;
+              while ((m2 = rx2.exec(r.output)) !== null && texts.length < 20) {
+                texts.push(m2[1]);
+              }
+
+              const found = texts.join(' | ').toLowerCase().includes(searchText.toLowerCase());
+              if (varName) {
+                storeVar(varName, found);
+              }
+              addLog('Step '+(i+1)+': ✓ OCR: '+(found ? 'DITEMUKAN' : 'TIDAK DITEMUKAN')+' "'+searchText+'"', found ? 'success' : 'warn');
+              await runAdb(stepDevice, 'shell rm /sdcard/ocr.xml');
+            } else {
+              throw new Error('OCR gagal: ' + r.error);
+            }
+          } else {
+            throw new Error('OCR butuh gambar. Tambahkan node Mobile Screenshot sebelumnya dan simpan ke variable.');
+          }
           break;
         }
 
@@ -2226,6 +2462,21 @@ async function runWorkflow() {
   // ── Selesai ───────────────────────────────────────────────
   clearInterval(execStats.interval);
   addLog('=== Workflow '+(stopRequested?'STOPPED':'Complete ✅')+' ===', stopRequested?'warn':'success');
+
+  // BUG #1 FIX: Reset input state after flow completion
+  isFlowRunning = false;
+  resetPanelState();  // Re-enable all property panel inputs
+  
+  // Explicitly re-enable all property panel inputs (extra safety)
+  document.querySelectorAll('.prop-input, .prop-textarea, textarea[id^="pe-"]').forEach(el => {
+    el.disabled = false;
+    el.removeAttribute('disabled');
+    el.removeAttribute('readonly');
+    el.style.pointerEvents = 'auto';
+    el.style.opacity = '1';
+    el.style.cursor = 'text';
+  });
+  console.log('[FLOW] Panel inputs re-enabled after flow completion');
 
   runBtn.disabled=false; stopBtn.disabled=true;
   runBtn.textContent='▶ RUN';

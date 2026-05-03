@@ -109,9 +109,20 @@ async function login(username, password) {
             }
             return { success: false, reason: error.response.data?.reason || 'Server error: ' + status };
         }
-        if (error.request) {
-            // Request dikirim tapi tidak ada respons
-            return { success: false, reason: 'Server Railway offline atau tidak reachable. Cek koneksi internet.' };
+        if (error.request && !error.response) {
+            // Request dikirim tapi tidak ada respons. Coba fallback ke autentikasi lokal.
+            const users = getUsers();
+            const user = users.find(u => u.username === username);
+            if (user && bcrypt.compareSync(password, user.passwordHash)) {
+                user.lastLogin = new Date().toISOString();
+                user.loginAttempts = 0;
+                saveUsers(users);
+                return {
+                    success: true,
+                    user: { username: user.username, role: user.role }
+                };
+            }
+            return { success: false, reason: 'Server offline dan kredensial lokal tidak cocok. Periksa koneksi internet atau gunakan akun lokal.' };
         }
         // Error lainnya
         return { success: false, reason: 'Terjadi kesalahan: ' + error.message };
