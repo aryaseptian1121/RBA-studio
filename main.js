@@ -150,11 +150,26 @@ const pool = new DevicePool();
 // ─────────────────────────────────────────
 let mainWindow = null;
 
+app.commandLine.appendSwitch('disable-background-timer-throttling'); // CHANGED
+app.commandLine.appendSwitch('disable-renderer-backgrounding'); // CHANGED
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows'); // CHANGED
+
+const { runFlow, stopFlow, setAdbExecutor } = require('./flowEngine'); // CHANGED
+setAdbExecutor(pool.adb.bind(pool)); // CHANGED
+
+ipcMain.on('run-flow', async (event, flowData) => { // CHANGED
+    await runFlow(flowData, event.sender);
+});
+
+ipcMain.on('stop-flow', () => { // CHANGED
+    stopFlow();
+});
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         width:1600, height:1020, minWidth:1200, minHeight:700,
         title:"RBA Designer Pro — Studio 2.0",
-        webPreferences:{ nodeIntegration:true, contextIsolation:false },
+        webPreferences:{ nodeIntegration:true, contextIsolation:false, backgroundThrottling:false }, // CHANGED
         backgroundColor:'#080d17'
     });
     
@@ -297,148 +312,6 @@ ipcMain.handle("auth-check", async () => {
         authenticated: isAuthenticated, 
         user: currentUser 
     };
-});
-
-// ================================
-// WORKFLOW ENGINE (SAFE ADDITION)
-// ================================
-
-function buildGraph(nodes, edges) {
-    const nodeMap = {};
-    const edgeMap = {};
-
-    nodes.forEach(n => nodeMap[n.id] = n);
-
-    edges.forEach(e => {
-        const from = e.from || e.source;
-        const to   = e.to   || e.target;
-
-        if (!edgeMap[from]) edgeMap[from] = [];
-        edgeMap[from].push(to);
-    });
-
-    return { nodeMap, edgeMap };
-}
-
-function getNextNode(edgeMap, id) {
-    return edgeMap[id]?.[0] || null;
-}
-
-function delay(ms) {
-    return new Promise(res => setTimeout(res, ms));
-}
-
-// 🔥 PENTING: pakai ADB EXISTING kamu
-async function executeStepSafe(node, device) {
-    return new Promise(resolve => {
-        const type = node.data.type;
-        const p = node.data.properties || {};
-
-        // pakai IPC ADB lama kamu (AMAN)
-        if (type === "mobile-tap") {
-            pool.adb(`shell input tap ${p.x} ${p.y}`, device, resolve);
-        }
-
-        else if (type === "mobile-swipe") {
-            pool.adb(`shell input swipe ${p.x1} ${p.y1} ${p.x2} ${p.y2} ${p.duration||300}`, device, resolve);
-        }
-
-        else if (type === "delay") {
-            setTimeout(resolve, p.duration || 1000);
-        }
-
-        else {
-            resolve();
-        }
-    });
-}
-async function runWorkflowEngineSafe({ nodes, edges, device }) {
-
-    const { nodeMap, edgeMap } = buildGraph(nodes, edges);
-
-    let currentId = nodes[0]?.id;
-
-    const loopStack = [];
-    const retryStack = [];
-
-    while (currentId) {
-        const node = nodeMap[currentId];
-        const type = node.data.type;
-        const props = node.data.properties || {};
-
-        console.log("RUN:", node.data.label);
-
-        try {
-
-            // LOOP START
-            if (type === "repeat-start") {
-                loopStack.push({
-                    startId: getNextNode(edgeMap, currentId),
-                    current: 0,
-                    max: props.repeatCount || 1
-                });
-            }
-
-            // LOOP END
-            else if (type === "repeat-end") {
-                const loop = loopStack[loopStack.length - 1];
-
-                if (loop && loop.current < loop.max - 1) {
-                    loop.current++;
-                    currentId = loop.startId;
-                    continue;
-                } else {
-                    loopStack.pop();
-                }
-            }
-
-            // RETRY START
-            else if (type === "retry-start") {
-                retryStack.push({
-                    startId: getNextNode(edgeMap, currentId),
-                    current: 0,
-                    max: props.maxRetries || 0,
-                    delay: props.interval || 0
-                });
-            }
-
-            // RETRY END
-            else if (type === "retry-end") {
-                const retry = retryStack[retryStack.length - 1];
-
-                if (retry && retry.current < retry.max) {
-                    retry.current++;
-                    console.log(`Retry ${retry.current}/${retry.max}`);
-
-                    await delay(retry.delay);
-                    currentId = retry.startId;
-                    continue;
-                } else {
-                    retryStack.pop();
-                }
-            }
-
-            // STEP NORMAL
-            else {
-                await executeStepSafe(node, device);
-            }
-
-        } catch (err) {
-            console.error("ERROR:", err);
-        }
-
-        currentId = getNextNode(edgeMap, currentId);
-    }
-
-    console.log("=== Workflow Done ===");
-}
-ipcMain.handle("run-workflow-safe", async (e, payload) => {
-    try {
-        await runWorkflowEngineSafe(payload);
-        return { success: true };
-    } catch (err) {
-        return { success: false, error: err.message };
-    }
 });
 
 // ─────────────────────────────────────────

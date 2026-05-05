@@ -1,5 +1,5 @@
 // ============================================================
-// RBA STUDIO PRO — app.js (Enhanced & Fixed)
+// RBA STUDIO PRO ï¿½ app.js (Enhanced & Fixed)
 // Author: Arya Septian  |  Version: 2.0
 // ============================================================
 const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
@@ -121,7 +121,7 @@ const pool = new DevicePool();
 function createWindow() {
     const win = new BrowserWindow({
         width:1600, height:1020, minWidth:1200, minHeight:700,
-        title:"RBA Designer Pro — Studio 2.0",
+        title:"RBA Designer Pro ï¿½ Studio 2.0",
         webPreferences:{ nodeIntegration:true, contextIsolation:false },
         backgroundColor:'#080d17'
     });
@@ -544,7 +544,7 @@ header{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);d
       <div class="rec-badge" id="rec-badge"><div class="rec-dot"></div>REC</div>
       <div class="hdr-badge offline" id="bot-status"><div class="hdr-dot"></div>OFFLINE</div>
       <button class="hdr-btn primary" id="run-flow-btn" onclick="runWorkflow()">? RUN</button>
-      <button class="hdr-btn danger"  id="stop-flow-btn" onclick="stopWorkflow()" disabled>¦ STOP</button>
+      <button class="hdr-btn danger"  id="stop-flow-btn" onclick="stopWorkflow()" disabled>ï¿½ STOP</button>
       <button class="hdr-btn" onclick="saveCurrentProject()">?? Save</button>
     </header>
 
@@ -769,8 +769,8 @@ header{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);d
                 <textarea class="prop-input" id="pe-text" rows="3" placeholder="Text atau {variable}" oninput="saveProp('text',this.value)"></textarea>
                 <label class="prop-label" style="margin-top:8px;">Clear Before Type</label>
                 <select class="prop-input prop-select" id="pe-clear" onchange="saveProp('clearBefore',this.value)">
-                  <option value="yes">Yes — clear field first</option>
-                  <option value="no">No — append text</option>
+                  <option value="yes">Yes ï¿½ clear field first</option>
+                  <option value="no">No ï¿½ append text</option>
                 </select>
                 <label class="prop-label" style="margin-top:8px;">Typing Speed (ms/char)</label>
                 <input class="prop-input" type="number" id="pe-typespeed" value="30" oninput="saveProp('typeSpeed',+this.value)">
@@ -1017,7 +1017,7 @@ header{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);d
         <div class="dash-sub">Klik pada canvas untuk merekam tap. Setiap klik akan menjadi node Tap dalam workflow.</div>
         <div style="display:flex;gap:12px;margin-bottom:20px;">
           <button class="hdr-btn primary" id="rec-start-btn" onclick="startMacroRecord()">? Start Recording</button>
-          <button class="hdr-btn" id="rec-stop-btn" onclick="stopMacroRecord()" disabled>¦ Stop</button>
+          <button class="hdr-btn" id="rec-stop-btn" onclick="stopMacroRecord()" disabled>ï¿½ Stop</button>
           <button class="hdr-btn" onclick="clearRecordedSteps()">?? Clear</button>
           <button class="hdr-btn" onclick="saveRecordedToWorkflow()" id="rec-save-btn" disabled>?? Save to Workflow</button>
         </div>
@@ -2232,7 +2232,7 @@ function renderSavedList() {
       '<div class="wf-item-ico">?</div>' +
       '<div class="wf-item-body">' +
         '<div class="wf-item-name">' + wf.name + '</div>' +
-        '<div class="wf-item-meta">' + (wf.steps||[]).length + ' steps · ' + new Date(wf.updatedAt||Date.now()).toLocaleString() + '</div>' +
+        '<div class="wf-item-meta">' + (wf.steps||[]).length + ' steps ï¿½ ' + new Date(wf.updatedAt||Date.now()).toLocaleString() + '</div>' +
       '</div>' +
       '<div class="wf-item-actions"></div>';
     const actions = item.querySelector('.wf-item-actions');
@@ -2454,6 +2454,25 @@ ipcRenderer.on('device-list', (e, list) => {
   if (list.includes(prev)) sel.value = prev;
   const statusEl = document.getElementById('bot-status');
 });
+
+ipcRenderer.on('flow-log', (_, msg) => {
+  addLog(msg.message, msg.type);
+});
+
+ipcRenderer.on('flow-complete', (_, { success }) => {
+  const runBtn = document.getElementById('run-flow-btn');
+  const stopBtn = document.getElementById('stop-flow-btn');
+  const tbRun = document.getElementById('tb-run-btn');
+  const status = document.getElementById('bot-status');
+  if (runBtn) { runBtn.disabled = false; runBtn.textContent = '? RUN'; }
+  if (stopBtn) stopBtn.disabled = true;
+  if (tbRun) { tbRun.textContent = '? Run'; tbRun.disabled = false; }
+  if (status) {
+    status.className = 'hdr-badge offline';
+    status.innerHTML = '<div class="hdr-dot"></div>' + (success ? 'ONLINE' : 'OFFLINE');
+  }
+});
+
 setInterval(() => { if(typeof ipcRenderer !== 'undefined') ipcRenderer.send('get-devices'); }, 5000);
 
 // --- EXECUTION ENGINE -----------------------------------------
@@ -2636,7 +2655,7 @@ async function runWorkflow() {
         await wait(Math.max(0, parseInt(s.delay) || 0));
       }
       
-      // -- SWITCH STATEMENT — SATU, BERSIH, TANPA DUPLIKAT --
+      // -- SWITCH STATEMENT ï¿½ SATU, BERSIH, TANPA DUPLIKAT --
       switch(type) {
         case 'start':
           addLog('Step ' + (i+1) + ': START', 'info');
@@ -3033,7 +3052,7 @@ async function runWorkflow() {
         addLog('  Retry ' + retry.count + '/' + retry.maxRetry + ' dalam ' + retry.delay + 'ms...', 'warn');
         s.status = 'running'; render();
         await wait(retry.delay);
-        continue;  // JANGAN increment i — retry step yang sama
+        continue;  // JANGAN increment i ï¿½ retry step yang sama
       }
       
       s.status = 'error';
@@ -3077,7 +3096,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — TAP
+        // MOBILE ADB ï¿½ TAP
         // --------------------------------------------------
         case 'mobile-tap': {
           const x = parseInt(s.mx) || 0;
@@ -3091,7 +3110,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — SWIPE
+        // MOBILE ADB ï¿½ SWIPE
         // --------------------------------------------------
         case 'mobile-swipe': {
           const sx = parseInt(s.sx) || 0;
@@ -3108,7 +3127,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — SWIPE ARAH (scroll-page & swipe PC)
+        // MOBILE ADB ï¿½ SWIPE ARAH (scroll-page & swipe PC)
         // --------------------------------------------------
         case 'swipe':
         case 'scroll-page': {
@@ -3128,7 +3147,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — SIGNATURE SWIPE
+        // MOBILE ADB ï¿½ SIGNATURE SWIPE
         // --------------------------------------------------
         case 'signature-swipe': {
           if (!stepDevice || stepDevice === 'No ADB Device') throw new Error('Tidak ada device ADB');
@@ -3160,7 +3179,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — PRESS KEY
+        // MOBILE ADB ï¿½ PRESS KEY
         // --------------------------------------------------
         case 'mobile-press-key': {
           const keyCode = s.keyCode || '4'; // Default: Back button
@@ -3173,7 +3192,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — TYPE TEXT (input teks ke HP via ADB)
+        // MOBILE ADB ï¿½ TYPE TEXT (input teks ke HP via ADB)
         // --------------------------------------------------
         case 'type-into': {
           if (!stepDevice || stepDevice === 'No ADB Device') {
@@ -3205,7 +3224,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — SCREENSHOT (FIXED: pull ke folder kerja)
+        // MOBILE ADB ï¿½ SCREENSHOT (FIXED: pull ke folder kerja)
         // --------------------------------------------------
         case 'mobile-screenshot': {
           // Validasi device - selalu gunakan deviceId spesifik
@@ -3269,7 +3288,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — READ UI ELEMENT (FIXED: parse XML dump)
+        // MOBILE ADB ï¿½ READ UI ELEMENT (FIXED: parse XML dump)
         // --------------------------------------------------
         case 'read-ui-element':
         case 'mobile-find-text': {
@@ -3370,7 +3389,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — OPEN APP
+        // MOBILE ADB ï¿½ OPEN APP
         // --------------------------------------------------
         case 'open-app': {
           if (!stepDevice || stepDevice === 'No ADB Device') throw new Error('Tidak ada device ADB');
@@ -3385,7 +3404,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // MOBILE ADB — CLOSE APP
+        // MOBILE ADB ï¿½ CLOSE APP
         // --------------------------------------------------
         case 'close-app': {
           if (!stepDevice || stepDevice === 'No ADB Device') throw new Error('Tidak ada device ADB');
@@ -3399,7 +3418,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // BROWSER — OPEN URL
+        // BROWSER ï¿½ OPEN URL
         // --------------------------------------------------
         case 'open-browser': {
           const url = interpolate(s.url || 'https://example.com');
@@ -3413,7 +3432,7 @@ async function runSingleStep() {
         }
 
         // --------------------------------------------------
-        // BROWSER — CLICK / TAP ELEMENT
+        // BROWSER ï¿½ CLICK / TAP ELEMENT
         // --------------------------------------------------
         case 'tap':
         case 'click': {
@@ -3424,14 +3443,14 @@ async function runSingleStep() {
             if (!r.success) throw new Error('Tap gagal: ' + r.error);
           } else {
             await wait(500);
-            addLog('  (Simulasi click — butuh Puppeteer untuk browser automation)', 'warn');
+            addLog('  (Simulasi click ï¿½ butuh Puppeteer untuk browser automation)', 'warn');
           }
           addLog('  Click selesai', 'success');
           break;
         }
 
         // --------------------------------------------------
-        // BROWSER — EXTRACT TEXT
+        // BROWSER ï¿½ EXTRACT TEXT
         // --------------------------------------------------
         case 'extract-text':
         case 'extract-table': {
@@ -3799,7 +3818,7 @@ async function runSingleStep() {
           break;
         }
         case 'ai-decision': {
-          addLog(\`Step \${i+1}: AI Decision (butuh integrasi AI API — set apiUrl ke endpoint AI)\`, 'warn');
+          addLog(\`Step \${i+1}: AI Decision (butuh integrasi AI API ï¿½ set apiUrl ke endpoint AI)\`, 'warn');
           if (s.var) storeVar(s.var, 'ai_pending');
           await wait(500);
           break;
@@ -3838,7 +3857,7 @@ async function runSingleStep() {
             if (!r.success) throw new Error('Tap gagal: ' + r.error);
           } else {
             await wait(500);
-            addLog(\`  (Simulasi click — butuh Puppeteer untuk browser automation)\`, 'warn');
+            addLog(\`  (Simulasi click ï¿½ butuh Puppeteer untuk browser automation)\`, 'warn');
           }
           addLog('  Click selesai', 'success');
           break;
@@ -4190,7 +4209,7 @@ async function runSingleStep() {
           break;
         }
         case 'ai-decision': {
-          addLog(\`Step \${i+1}: AI Decision (butuh integrasi AI API — set apiUrl ke endpoint AI)\`, 'warn');
+          addLog(\`Step \${i+1}: AI Decision (butuh integrasi AI API ï¿½ set apiUrl ke endpoint AI)\`, 'warn');
           if (s.var) storeVar(s.var, 'ai_pending');
           await wait(500);
           break;
@@ -4237,11 +4256,11 @@ async function runSingleStep() {
         retry.count++;
         execStats.retries++;
         document.getElementById('st-retries').textContent = execStats.retries;
-        addLog('  ?? Retry ' + retry.count + '/' + retry.maxRetry + ' — menunggu ' + retry.delay + 'ms...', 'warn');
+        addLog('  ?? Retry ' + retry.count + '/' + retry.maxRetry + ' ï¿½ menunggu ' + retry.delay + 'ms...', 'warn');
         s.status = 'running';
         render();
         await wait(retry.delay);
-        // i TIDAK di-increment — loop while akan retry step yang sama
+        // i TIDAK di-increment ï¿½ loop while akan retry step yang sama
         continue;
       } else {
         if (retry.maxRetry > 0) {
@@ -4313,6 +4332,7 @@ function stopWorkflow() {
   stopRequested = true;
   document.getElementById('stop-flow-btn').disabled = true;
   addLog('? Emergency STOP', 'warn');
+  ipcRenderer.send('stop-flow');
 }
 
 function wait(ms) { return new Promise(r=>setTimeout(r, Math.max(0, ms))); }
@@ -5773,7 +5793,6 @@ async function executeStepOnce(step, device, varStore, addLog, runAdb, wait, int
 async function runWorkflowV2() {
   if (!project.steps.length) { addLog('Tidak ada steps!', 'warn'); return; }
 
-  // Setup UI
   const runBtn = document.getElementById('run-flow-btn');
   const stopBtn = document.getElementById('stop-flow-btn');
   const tbRun = document.getElementById('tb-run-btn');
@@ -5785,139 +5804,40 @@ async function runWorkflowV2() {
   execStats = { steps:0, errors:0, retries:0, adb:0, startTime:Date.now(), interval:null };
   execStats.interval = setInterval(updateRuntime, 500);
 
-  runBtn.disabled = true; stopBtn.disabled = false;
-  runBtn.textContent = 'Running V2...';
+  if (runBtn) runBtn.disabled = true;
+  if (stopBtn) stopBtn.disabled = false;
+  if (runBtn) runBtn.textContent = 'Running V2...';
   if (tbRun) { tbRun.textContent = 'Running V2...'; tbRun.disabled = true; }
-  status.className = 'hdr-badge online';
-  status.innerHTML = '<div class="hdr-dot"></div>ONLINE';
-
-  const device = document.getElementById('device-selector').value;
-  addLog('=== Workflow V2 Start: ' + currentName + ' (Advanced Loops & Retry) ===', 'info');
-
-  // Advanced loop stack for nested loops
-  const loopStack = [];
-
-  let i = 0;
-  while (i < project.steps.length && !stopRequested) {
-    const step = project.steps[i];
-    const type = String(step.type || '').toLowerCase();
-
-    execStats.steps++;
-    document.getElementById('st-steps').textContent = execStats.steps;
-    step.status = 'running';
-    render();
-
-    try {
-      // -- HANDLE LOOP START --
-      if (type === 'repeat-start' || type === 'loop-start') {
-        const loopCount = Math.max(1, parseInt(step.loopCount) || 1);
-        const loopVar = step.loopVar || step.loopVariable || 'i';
-        const loopName = step.loopName || `loop_${step.id}`;
-
-        loopStack.push({
-          startIndex: i,
-          currentIteration: 0,
-          maxIterations: loopCount,
-          loopVariable: loopVar,
-          loopName: loopName,
-          delayBetweenIterations: parseInt(step.delayBetweenLoop) || 0,
-          breakCondition: step.breakCondition || null
-        });
-
-        storeVar(loopVar, 0);
-        addLog(`?? Loop "${loopName}" started: ${loopCount} iterations`, 'info');
-        step.status = 'success';
-        render();
-        i++;
-        continue;
-      }
-
-      // -- HANDLE LOOP END --
-      if (type === 'repeat-end' || type === 'loop-end') {
-        if (loopStack.length === 0) {
-          addLog(`?? Loop End tanpa Loop Start di step ${i+1}`, 'warn');
-          step.status = 'success';
-          render();
-          i++;
-          continue;
-        }
-
-        const loop = loopStack[loopStack.length - 1];
-
-        // Check break condition
-        let shouldBreak = false;
-        if (loop.breakCondition) {
-          try {
-            const fn = new Function(...Object.keys(varStore), `return (${loop.breakCondition})`);
-            shouldBreak = Boolean(fn(...Object.values(varStore)));
-          } catch(e) {
-            addLog(`?? Break condition error: ${e.message}`, 'warn');
-          }
-        }
-
-        if (shouldBreak) {
-          addLog(`?? Loop "${loop.loopName}" di-break karena kondisi`, 'warn');
-          loopStack.pop();
-          step.status = 'success';
-          render();
-          i++;
-          continue;
-        }
-
-        // Increment iteration
-        loop.currentIteration++;
-        storeVar(loop.loopVariable, loop.currentIteration);
-
-        if (loop.currentIteration < loop.maxIterations) {
-          // Continue loop - jump back to after Loop Start
-          addLog(`?? Loop "${loop.loopName}": iterasi ${loop.currentIteration}/${loop.maxIterations}`, 'info');
-
-          // Delay between iterations
-          if (loop.delayBetweenIterations > 0) {
-            addLog(`?? Delay antar iterasi: ${loop.delayBetweenIterations}ms`, 'info');
-            await wait(loop.delayBetweenIterations);
-          }
-
-          i = loop.startIndex + 1; // Jump back to step after Loop Start
-          continue;
-        } else {
-          // Loop finished
-          addLog(`? Loop "${loop.loopName}" selesai: ${loop.maxIterations} iterasi`, 'success');
-          loopStack.pop();
-          step.status = 'success';
-          render();
-          i++;
-          continue;
-        }
-      }
-
-      // -- EXECUTE STEP WITH RETRY --
-      await executeStepWithRetry(step, device, varStore, addLog, runAdb, wait, interpolate, storeVar);
-
-      step.status = 'success';
-
-    } catch (error) {
-      execStats.errors++;
-      document.getElementById('st-errors').textContent = execStats.errors;
-      addLog(`? Error di step ${i+1} "${step.name}": ${error.message}`, 'error');
-      step.status = 'error';
-    }
-
-    render();
-    await wait(50);
-    i++;
+  if (status) {
+    status.className = 'hdr-badge online';
+    status.innerHTML = '<div class="hdr-dot"></div>ONLINE';
   }
 
-  clearInterval(execStats.interval);
-  addLog('=== Workflow V2 ' + (stopRequested ? 'STOPPED' : 'Complete') + ' ===', stopRequested ? 'warn' : 'success');
+  addLog('=== Workflow V2 Start: ' + currentName + ' (Main process) ===', 'info');
 
-  runBtn.disabled = false; stopBtn.disabled = true;
-  runBtn.textContent = '? RUN';
-  if (tbRun) { tbRun.textContent = '? Run'; tbRun.disabled = false; }
-  status.className = 'hdr-badge offline';
-  status.innerHTML = '<div class="hdr-dot"></div>OFFLINE';
+  const flowData = {
+    name: currentName,
+    nodes: project.steps.map(step => ({
+      id: step.id,
+      type: step.type || (step.data && step.data.type) || '',
+      data: {
+        x: step.cx ?? step.x ?? step.mx,
+        y: step.cy ?? step.y ?? step.my,
+        x1: step.sx ?? step.x1,
+        y1: step.sy ?? step.y1,
+        x2: step.ex ?? step.x2,
+        y2: step.ey ?? step.y2,
+        duration: step.dur ?? step.duration ?? step.delay,
+        repeat: step.repeatCount ?? step.repeat ?? step.loopCount,
+        keycode: step.keyCode ?? step.keycode,
+        deviceId: step.deviceId || '',
+        ...step.data
+      }
+    })),
+    edges: (project.edges || []).map(e => ({ source: e.from || e.source, target: e.to || e.target }))
+  };
 
-  setTimeout(() => { project.steps.forEach(s => s.status = ''); render(); }, 3000);
+  ipcRenderer.send('run-flow', flowData);
 }
 
 // -------------------------------------------------------------
